@@ -1,0 +1,111 @@
+\name{fitsvar.sb.iso}
+\alias{fitsvar.sb.iso}
+\title{Fit an isotropic Shapiro-Botha variogram model}
+\usage{
+  fitsvar.sb.iso(esv, dk = ncol(esv$data$x), nx = NULL,
+    rmax = esv$grid$max, min.contrib = 15,
+    method = c("cressie", "equal", "npairs", "gstat"),
+    iter = 10, tol = sqrt(.Machine$double.eps))
+}
+\arguments{
+  \item{esv}{pilot semivariogram estimate, a
+  \code{\link{np.svar}}-\code{\link{class}} (or
+  \code{\link{svar.bin}}) object. Typically an output of
+  the function \code{\link{svarisonp}}.}
+
+  \item{dk}{dimension of the kappa function (should be
+  greater than or equal to the dimension of the spatial
+  process \code{ncol(esv$data$x)}).}
+
+  \item{nx}{number of discretization nodes. Defaults to
+  \code{min(nesv - 1, 50)}, where \code{nesv} is the number
+  of semivariogram estimates.}
+
+  \item{rmax}{maximum lag considered in the discretization
+  (range of the fitted variogram on output).}
+
+  \item{min.contrib}{minimum number of contributing pairs
+  (pilot estimates with a lower number are ignored).}
+
+  \item{method}{string indicating the WLS fitting method to
+  be used (e.g. \code{method = "cressie"}). See "Details"
+  below.}
+
+  \item{iter}{maximum number of interations of the WLS
+  algorithm (used only if \code{method == "cressie"}).}
+
+  \item{tol}{absolute convergence tolerance (used only if
+  \code{method == "cressie"}).}
+}
+\value{
+  Returns the fitted variogram model, an object of
+  \code{\link{class}} \code{sb.iso} (extends
+  \code{\link{svarmod}}) with an additional component
+  \code{fit} containing: \item{u}{vector of
+  lags/distances.} \item{sv}{vector of pilot semivariogram
+  estimates.} \item{fitted.sv}{vector of fitted
+  semivariances.} \item{wls}{value of the WLS objective
+  function.} \item{method}{string indicating the WLS
+  fitting method used.} \item{iter}{number of WLS
+  iterations (if \code{method == "cressie"}).}
+}
+\description{
+  Fits a `nonparametric' isotropic Shapiro-Botha variogram
+  model by WLS through quadratic programming. Following
+  Gorsich and Genton (2004), the nodes are selected as the
+  scaled roots of Bessel functions (see
+  \code{\link{disc.sb}}).
+}
+\details{
+  The fit is done using a (possibly iterated) weighted
+  least squares criterion, minimizing: \deqn{WLS(\theta) =
+  \sum_i w_i[(\hat{\gamma}(h_i)) - \gamma(\theta; h_i)]^2.}
+  The different options for the argument \code{method}
+  define the WLS algorithm used: \describe{
+  \item{\code{"cressie"}}{The default method. The procedure
+  is iterative, with \eqn{w_i=1} (OLS) used for the first
+  step and with the weights recalculated at each iteration,
+  following Cressie (1985), until convergence: \deqn{w_i =
+  N(h_i)/\gamma(\hat{\theta}; h_i)^2,} where \eqn{N(h_i)}
+  is the (equivalent) number of contributing pairs in the
+  estimation at lag \eqn{h_i}.}
+  \item{\code{"equal"}}{Ordinary least squares:
+  \eqn{w_i=1}.} \item{\code{"npairs"}}{\eqn{w_i=N(h_i).}}
+  \item{\code{"gstat"}}{The default fitting method in
+  \pkg{gstat}: \eqn{w_i = N(h_i)/h_i^2}.} } Function
+  \code{\link[quadprog]{solve.QP}} of \pkg{quadprog}
+  package is used to solve the quadratic programming
+  problem. If \code{nx} and/or \code{dim(esv)} are large,
+  this function may fail with error message "matrix D in
+  quadratic function is not positive definite!".
+}
+\references{
+  Ball, J.S. (2000) Automatic computation of zeros of
+  Bessel functions and other special functions. \emph{SIAM
+  Journal on Scientific Computing}, \bold{21}, 1458-1464.
+
+  Cressie, N. (1985) Fitting variogram models by weighted
+  least squares.  \emph{Mathematical Geology}, \bold{17},
+  563-586.
+
+  Cressie, N. (1993) \emph{Statistics for Spatial Data}.
+  New York. Wiley.
+
+  Fernandez Casal R., Gonzalez Manteiga W. and Febrero
+  Bande M. (2003) Flexible Spatio-Temporal Stationary
+  Variogram Models, \emph{Statistics and Computing},
+  \bold{13}, 127-136.
+
+  Gorsich, D.J. and Genton, M.G. (2004) On the
+  discretization of nonparametric covariogram estimators.
+  \emph{Statistics and Computing}, \bold{14}, 99-108.
+
+  Shapiro, A. and Botha, J.D. (1991) Variogram fitting with
+  a general class of conditionally non-negative definite
+  functions. \emph{Computational Statistics and Data
+  Analysis}, \bold{11}, 87-96.
+}
+\seealso{
+  \code{\link{svarmod.sb.iso}}, \code{\link{disc.sb}}.
+}
+

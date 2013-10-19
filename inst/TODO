@@ -1,0 +1,45 @@
+TODO file
+List of future (desired) work to be done... 
+
+
+To be done:
+
+    o Add to 'inst' a 'CITATION' file for use by the citation function.
+        
+#   - '<- update.locpol.bin' 
+#   - comprobar valided/dimensiones parámetros rutinas .Fortran
+#   - interp.grid.par, predic.locpol.bin y missing  : 
+#           Determinar valores x que están dentro de cuadriculas con datos?
+#           Asignar NA si se pretende extrapolar?
+#           NA's en FORTRAN?  
+#   - revisar h, opción multiplo espaciado/dimensión rejilla 
+#     (units.h=, h(i,i) < 0 ?)
+#     (defecto en fortran con valor negativo h(1,1)??)
+#   - exemplos
+#   - métodos is: is.locpol.bin, ...
+#   - métodos as: as.data.frame.data.grid, as.bin.data.data.grid, as.bin.data.default, ...
+#   - renombrar coords -> coordinates ? (problemas có método S4 de sp?)
+#   - nº de bins, sm pocos bins:
+#         nb <- round(log(ny)/log(2) + 1) # tener en cuenta el nº de dimensiones?
+#             <- round(log(x)/log(2) + 1) # <- round((log(x)/log(1.1) + 1)^(1/2))^2
+#         Regla de Sturges k=1+log2(n)
+#         Regla de Scott K=(2n)^(1/3)
+#   - drop(x[ok,]) just in case...
+#        ok <- complete.cases(x, y) # observations having no missing values across x and y
+#        if (any(!ok)) {
+#            warning("missing values removed")
+#            x <- x[ok,]
+#            y <- y[ok]
+#            ny <- length(y)
+#        }
+
+
+Questions & Doubts:
+   
+    o Depend / Suggest 'sp', 'gstat' packages
+      Depend / Suggest / Recommend 'geoR', 'fields' packages
+
+    o ‘Depends’, ‘Suggests’, ‘Imports’, ‘Enhances’ ... packages
+      See the information on DESCRIPTION files in the chapter 'Creating R
+      packages' of the 'Writing R Extensions' manual.
+      

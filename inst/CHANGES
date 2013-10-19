@@ -1,0 +1,155 @@
+Version 0.2-3 (2013-10-19)
+
+    o Changed the default value of "hat.bin" argument to FALSE in "locpol" and 
+      "predict.locpol.bin".
+         
+    o Added a default value for "maxlag" argument in "svar.bin", "svariso", 
+      "np.svar", "svarisonp" and "svarisohcv".
+         
+    o Changed the default value computation of "nx" argument in "fitsvar.sb.iso" 
+      to avoid "Error in solve.QP(Dmat, dvec, Amat, bvec) :
+      matrix D in quadratic function is not positive definite!".
+      
+    o Updated documentation.
+     
+
+Version 0.2-2 (2013-10-15)
+
+    o Added "bin.den" S3 class and methods and "as.bin.den" generic function.   
+
+    o Added "np.den" S3 class and generic function.  
+    
+    o Added "locpol.bin.den" (alias of "np.den.bin.den") and "h.cv.bin.den" methods. 
+    
+    o Added "earthquakes" and "aquifer" data sets.
+    
+    o Added a "dimnames" argument to "grid.par" function 
+      (constructor of the class of the same name).
+    
+    o Minor changes on "binning" and "interp.data.grid" functions.
+
+
+Version 0.2-1 (2013-09-12)
+
+    o Completed the package documentation (using "roxygen2").
+
+    o Changes on "svarmod", added "svarmodels" ("svarmod.R").
+
+    o Changes on "as.variomodel" and "as.vgm" ("npsp-geoR.R" and "npsp-gstat.R", 
+      interoperability with geoR and gstat, respectively).
+
+    o Some minor changes to pass (for the first time) R CMD check without notes or warnings
+      (".onLoad" -> ".onAttach", ...).
+
+
+Version 0.2 (2013-06-25)
+
+    o Major changes in R functions "locpol.default", "locpol.bin.data" and "svarisonp":
+    
+        - Added a new option to set the degree of the local polynomial used.
+        
+        - Added a new option to compute (partial) derivative estimates.
+        
+        - Added an option to enable/disable binning hat matrix computation.   
+
+    o Added an option to enable/disable data hat matrix computation in "predict.locpol.bin".    
+
+    o Major changes in fortran code ("lp_module.f90", "svar_module.f90", "linreg_module.f90"):
+    
+        - Weighted linear regression allows for rank-deficient matrices 
+          ("DGELSYR" fortran routine, a modification of LAPACK "DGELSY"). 
+
+        - New functionalities (degree, derivatives,...)
+        
+        - Changes on Fortran-R interfaces.
+    
+
+Version 0.1-8 (2013-04-01)
+
+    o Added "svarmod" and "sb.iso" (extends "svarmod")
+      S3 classes and methods.  
+
+    o Added "svar()" S3 generic and "covar()" functions.  
+
+    o Added "fitsvar.sb.iso()", "kappa.sb()" and "disc.sb()" functions.  
+
+    o Added "as.vgm()" S3 generic (interoperability with gstat).  
+    
+
+Version 0.1-7 (2013-02-19)
+
+    o Added "h.cv.bin()" and "h.cv()" functions (EXPERIMENTAL).  
+    
+    o Changes on "locpolhcv" and "svarisohcv()".
+
+    o Changes on "predict.locpol.bin()" (new fortran code). 
+    
+      
+Version 0.1-6 (2012-10-24)
+
+    o Added "predict.locpol.bin()" and S3 generic function "interp()" ("interp.grid.par()" 
+      and "interp.data.grid()" methods).  
+
+    o Changes on R-Fortran interfaces (parameters for type(grid_bin) :: bin, 
+      "lp_raw" replaces "est_bin", ...).
+      
+
+Version 0.1-5 (2012-09-19)
+
+    o Added "hopt.cv()", "locpolhcv()" and "svarisohcv()" functions (EXPERIMENTAL).  
+
+    o Changes on FORTRAN and R code to handle missing values (EXPERIMENTAL)
+      (NA's on input & output).
+      
+    o "binning()" is again a standard function (interface to the fortran routine "binning").  
+     
+
+Version 0.1-4 (2012-09-01)
+
+    o Added "svar.bin" (extends "bin.data"), and "np.svar" (extends "svar.bin")
+      S3 classes and methods.  
+
+    o Changes on "svariso()" (returns an object of class "svar.bin", ...).  
+
+    o Added "svarisonp()" and "as.variogram()" S3 generic functions.
+      "svarisonp.default" replaces "svarisonp" (interface to the fortran routine "svar_iso_np").   
+
+    o Added "variogram" package demo.
+
+
+Version 0.1-3 (2012-08-25)
+
+    o Added "grid.par", "data.grid", "bin.data" and "locpol.bin"  
+      S3 classes and methods.  
+
+    o Added "coords()" and "coordvalues()" S3 generic functions.  
+
+    o Added "binning()" and "locpol()" S3 generic functions.
+      "binning.default" replaces "set_bin" (interface to the fortran routine "set_bin").   
+      "locpol.default" replaces "locpolbin" (interface to the fortran routine "est_bin").   
+
+    o Added "locpol.bin.data()" (interface to the fortran routine "lp_bin").
+
+    o Added "datagrid", "binning" and "locpol" package demos.
+      
+    
+Version 0.1-2 (2012-08-20)
+
+    o Added "svarisonp()" (interface to the fortran routine "svar_iso_np").
+
+    o Added "svariso()" (interface to the fortran routine "svar_iso_bin").
+
+    o Added "as.variogram.svariso()" (interoperability with geoR).
+       
+    
+Version 0.1-1 (2012-06-01)
+
+    o Added a package demo.
+    
+    o Added "npsp-geoR.R" (interoperability with geoR).
+
+    o Some minor changes (output "set_bin" and "locpolbin", "onLoad",...).
+
+
+Version 0.1-0 (2012-04-17): initial version in package form.
+    
