@@ -6,7 +6,8 @@
 !     AVISO: Este modulo es una versión preliminar y será modificado.
 !     (para que todas las rutinas controlen los errores)
 !
-!   Autor: (c) Ruben Fernandez-Casal    Ultima revision: Mar 2002, Jul 2012
+!   Autor: (c) Ruben Fernandez-Casal    
+!   Fecha revision: Mar 2002, Jul 2012
 !-----------------------------------------------------------------------
       IMPLICIT NONE
       INTEGER, PRIVATE :: errcode, erraction

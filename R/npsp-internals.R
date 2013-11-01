@@ -58,7 +58,6 @@ as.data.frame.grid.par <- function(x, row.names = dimnames(x), optional = FALSE,
 
 #--------------------------------------------------------------------
 #' @rdname npsp-internals
-#' @method is data.grid
 #' @keywords internal
 #' @export
 is.data.grid <- function(x) inherits(x, "data.grid")

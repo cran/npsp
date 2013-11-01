@@ -26,6 +26,7 @@ interp <- function(object, ...) UseMethod("interp")
 ##--------------------------------------------------------------------
 ## @rdname interp  
 ## @method interp default
+## @export
 #interp.default <- function(object, ...)
 #    stop(paste("method 'interp' is not defined for this class:", data.class(object)))
 ##--------------------------------------------------------------------
@@ -34,6 +35,7 @@ interp <- function(object, ...) UseMethod("interp")
 #--------------------------------------------------------------------
 #' @rdname interp  
 #' @method interp grid.par
+#' @export
 interp.grid.par <- function(object, data, newx, ...) {
 # Linear interpolation of a multidimensional regular grid
 # \code{interp} methods are interfaces to the fortran routine "interp_data_grid" (grid_module.f90)
@@ -71,6 +73,7 @@ interp.grid.par <- function(object, data, newx, ...) {
 #' @rdname interp  
 #' @method interp data.grid
 #' @param data.ind integer or character with the index or name of the data component.
+#' @export
 interp.data.grid <- function(object, data.ind = 1, newx, ...) {
 #--------------------------------------------------------------------
     if (!inherits(object, "data.grid"))

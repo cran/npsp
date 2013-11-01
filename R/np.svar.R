@@ -72,6 +72,7 @@ np.svar <- function(x, ...) UseMethod("np.svar")
 #' @param  hat.bin logical; if TRUE, the hat matrix of the binned semivariances is returned.
 #' @param cov.bin covariance matrix of the binned semivariances. 
 #' Defaults to identity. 
+#' @export
 np.svar.default <- function(x, y, h = NULL, maxlag = NULL, nlags = NULL,
                       minlag = maxlag/nlags, degree = 1,
                       drv = FALSE, hat.bin = FALSE, ncv = 0, ...) {
@@ -149,6 +150,7 @@ np.svar.default <- function(x, y, h = NULL, maxlag = NULL, nlags = NULL,
 
 #' @rdname np.svar
 #' @method np.svar svar.bin
+#' @export
 np.svar.svar.bin <- locpol.svar.bin
 
 

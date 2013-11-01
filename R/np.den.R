@@ -67,6 +67,7 @@ bin.den <- function(x, nbin = NULL) {
 #' @rdname bin.den  
 #' @param object (gridded data) used to select a method.
 #' @param ... further arguments passed to or from other methods.
+#' @export
 as.bin.den <- function(object, ...) UseMethod("as.bin.den")
 # S3 generic function as.bin.den
 #--------------------------------------------------------------------
@@ -75,6 +76,7 @@ as.bin.den <- function(object, ...) UseMethod("as.bin.den")
 #--------------------------------------------------------------------
 #' @rdname bin.den  
 #' @method as.bin.den bin.data
+#' @export
 as.bin.den.bin.data <- function(object, ...) {
 #--------------------------------------------------------------------
     if (!inherits(object, "bin.data"))
@@ -148,6 +150,7 @@ np.den <- function(x, ...) UseMethod("np.den")
 #' denotes the index of the estimation position. 
 #' @references
 #' Wand, M.P. and Jones, M.C. (1995) \emph{Kernel Smoothing}. Chapman and Hall, London.
+#' @export
 np.den.default <- function(x, nbin = NULL, h = NULL, degree = 1 + as.numeric(drv), 
                             drv = FALSE, ncv = 0, ...) {    
   xbin <- bin.den(x, nbin)
@@ -160,7 +163,7 @@ np.den.default <- function(x, nbin = NULL, h = NULL, degree = 1 + as.numeric(drv
 #--------------------------------------------------------------------
 #' @rdname np.den
 #' @method np.den bin.den
-# @export
+#' @export
 np.den.bin.den <- locpol.bin.den 
 
 
@@ -168,7 +171,7 @@ np.den.bin.den <- locpol.bin.den
 #--------------------------------------------------------------------
 #' @rdname np.den
 #' @method np.den bin.data
-# @export
+#' @export
 np.den.bin.data <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, 
                               ncv = 0, ...) {    
 #--------------------------------------------------------------------
@@ -181,7 +184,7 @@ np.den.bin.data <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FAL
 #--------------------------------------------------------------------
 #' @rdname np.den
 #' @method np.den svar.bin
-# @export
+#' @export
 np.den.svar.bin <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, 
                               ncv = 0, ...) {    
 #--------------------------------------------------------------------

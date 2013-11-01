@@ -32,6 +32,7 @@ as.variogram <- function(x, ...) UseMethod("as.variogram")
 #--------------------------------------------------------------------
 #' @rdname npsp-geoR
 #' @method as.variogram svar.bin
+#' @export
 as.variogram.svar.bin <- function(x, ...) {
 # Convierte el resultado de \code{\link{svariso}} en un objeto
 #   "compatible" con la clase "variogram" de geoR.
@@ -59,6 +60,7 @@ as.variogram.svar.bin <- function(x, ...) {
 #--------------------------------------------------------------------
 #' @rdname npsp-geoR
 #' @method as.variogram np.svar
+#' @export
 as.variogram.np.svar <- function(x, ...) {
 # Convierte el resultado de \code{\link{svarisonp}} en un objeto
 #   "compatible" con la clase "variogram" de geoR.
@@ -102,10 +104,11 @@ as.variomodel <- function(m, ...) UseMethod("as.variomodel")
 #--------------------------------------------------------------------
 #' @rdname npsp-geoR
 #' @method as.variomodel svarmod
-# @seealso \code{\link[geoR]{practicalRange}}
+#' @export
 as.variomodel.svarmod <- function(m, ...){
 # Convierte el resultado de \code{\link{svarmod}} en un objeto
 # "compatible" con la clase "variomodel" de geoR.
+# @seealso \code{\link[geoR]{practicalRange}}
 #--------------------------------------------------------------------
     if (!inherits(m, "svarmod"))
         stop("argument 'm' must be of class (or extending) 'svarmod'.")

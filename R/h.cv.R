@@ -112,7 +112,7 @@ h.cv <- function(bin, ...) UseMethod("h.cv")
 #'             xlab = ns[1], ylab = ns[2])
 #' contour(coorvs[[1]], coorvs[[2]], log(den$est), add = TRUE)
 #' with(earthquakes, points(lon, lat, pch = 20))
-#  @export
+#' @export
 h.cv.bin.data <- function(bin, objective = c("CV", "GCV", "MASE"), 
             h.start = NULL, h.lower = NULL, h.upper = NULL, degree = 1, 
             ncv = ifelse(objective == "GCV", 0, 1), cov.bin = NULL, 
@@ -209,6 +209,7 @@ h.cv.bin.data <- function(bin, objective = c("CV", "GCV", "MASE"),
 #--------------------------------------------------------------------
 #' @rdname h.cv  
 #' @method h.cv bin.den
+#' @export
 h.cv.bin.den <- function(bin, h.start = NULL, h.lower = NULL, h.upper = NULL, 
             degree = 1, ncv = 1, DEalgorithm = FALSE, ...) {
 #--------------------------------------------------------------------
@@ -228,7 +229,7 @@ h.cv.bin.den <- function(bin, h.start = NULL, h.lower = NULL, h.upper = NULL,
 #--------------------------------------------------------------------
 #' @rdname h.cv  
 #' @param cov covariance matrix of the data. Defaults to identity (uncorrelated data). 
-#'  @export
+#' @export
 hcv.data <- function(bin, objective = c("CV", "GCV", "MASE"), 
             h.start = NULL, h.lower = NULL, h.upper = NULL, degree = 1, 
             ncv = ifelse(objective == "GCV", 0, 1), cov = NULL, 

@@ -36,7 +36,7 @@
 #' @aliases npsp
 #' @docType package
 #' @useDynLib npsp
-#' @import quadprog
+#' @importFrom quadprog solve.QP
 #' @keywords nonparametric smooth
 #' @references
 #' Fernandez Casal R., Gonzalez Manteiga W. and  Febrero Bande M. (2003) 
@@ -87,7 +87,6 @@ NULL
 #' str(earthquakes)
 #' summary(earthquakes)
 #' with(earthquakes, plot(lon, lat))
-#' @export
 NULL
 
 
@@ -128,5 +127,4 @@ NULL
 #' str(aquifer)
 #' summary(aquifer)
 #' with(aquifer, plot(lon, lat))
-#' @export
 NULL

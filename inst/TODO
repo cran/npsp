@@ -1,11 +1,36 @@
 TODO file
-List of future (desired) work to be done... 
-
-
-To be done:
+List of future (desired) work to be done: 
 
     o Add to 'inst' a 'CITATION' file for use by the citation function.
         
+  
+    o Depend / Suggest 'sp', 'gstat' packages
+      Suggest / Recommend 'geoR', 'fields' packages
+
+      ‘Depends’, ‘Suggests’, ‘Imports’, ‘Enhances’ ... packages
+      See the information on DESCRIPTION files in the chapter 'Creating R
+      packages' of the 'Writing R Extensions' manual.
+      
+ 
+    o Plot methods
+
+
+    o Nonparametric bias-corrected variogram estimation under non-constant trend
+
+
+    o Kriging
+
+
+    o Anisotropic variogram models (spatio-temporal case)
+
+
+    o Additive and partially linear trend models
+
+
+    o Local Kriging
+
+ 
+      
 #   - '<- update.locpol.bin' 
 #   - comprobar valided/dimensiones parámetros rutinas .Fortran
 #   - interp.grid.par, predic.locpol.bin y missing  : 
@@ -34,12 +59,3 @@ To be done:
 #        }
 
 
-Questions & Doubts:
-   
-    o Depend / Suggest 'sp', 'gstat' packages
-      Depend / Suggest / Recommend 'geoR', 'fields' packages
-
-    o ‘Depends’, ‘Suggests’, ‘Imports’, ‘Enhances’ ... packages
-      See the information on DESCRIPTION files in the chapter 'Creating R
-      packages' of the 'Writing R Extensions' manual.
-      

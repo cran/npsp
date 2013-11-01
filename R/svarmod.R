@@ -37,13 +37,13 @@
 #' @param  sill  variance \eqn{\sigma^2} or sill of the variogram (NA for unbounded variograms).
 #' @param  range range (practical range or scale parameter) of the variogram 
 #' (NA for unbounded variograms; maybe a vector for anisotropic variograms).
-#' @export
 #' @return
 #' \code{svarmod} returns an \code{svarmod}-\code{\link{class}} object, a list 
 #' with function arguments as components.
 #' @note \code{svarmod} does not check the consistency of the parameter values.
 #' @seealso
 #' \code{\link{sv}}, \code{\link{covar}}.
+#' @export
 #--------------------------------------------------------------------
 svarmod <- function(model, type = "isotropic", par = NA,
                       nugget = NULL, sill = NULL, range = NULL) {
@@ -87,11 +87,11 @@ svarmod <- function(model, type = "isotropic", par = NA,
 #' @return
 #' \code{svarmod.sb.iso} returns an S3 object of \code{\link{class}} \code{sb.iso} 
 #' (extends \code{svarmod}) corresponding to a `nonparametric' isotropic Shapiro-Botha model.
-#' @export
 #' @references
 #' Shapiro, A. and Botha, J.D. (1991) Variogram fitting with a general class of 
 #'   conditionally non-negative definite functions. \emph{Computational Statistics 
 #'   and Data Analysis}, \bold{11}, 87-96. 
+#' @export
 svarmod.sb.iso <- function( dk, x, z, nu, range, sill = nu) {
 #--------------------------------------------------------------------
     result <- svarmod(model = svarmodels()["SB"], type = "isotropic",
@@ -141,11 +141,11 @@ svarmodels <- function(type = "isotropic") {
 #' @param  x  variogram model (\code{\link{svarmod}} object).
 #' @param  h  vector (isotropic case) or matrix of lags values.
 #' @param  ... further arguments passed to or from other methods.
-#' @export
 #' @return
 #' A vector of semivariance values \eqn{\gamma(h_i)}.
 #' @seealso
 #' \code{\link{covar}}
+#' @export
 #--------------------------------------------------------------------
 sv <- function(x, h, ...) UseMethod("sv")
 
@@ -153,14 +153,14 @@ sv <- function(x, h, ...) UseMethod("sv")
 #--------------------------------------------------------------------
 #' @rdname sv
 #' @method sv default
-# @export
+#' @export
  sv.default <- function(x, h, ...) stop("Invalid variogram object")
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
 #' @rdname sv
 #' @method sv svarmod
-# @export
+#' @export
  sv.svarmod <- function(x, h, ...) as.vgm.svarmod(x, h)$covtable
 # stop("Not defined (yet) for general variogram models")
 #--------------------------------------------------------------------
@@ -169,7 +169,7 @@ sv <- function(x, h, ...) UseMethod("sv")
 #--------------------------------------------------------------------
 #' @rdname sv  
 #' @method sv sb.iso
-# @export
+#' @export
 sv.sb.iso <- function(x, h, ...) {
 #--------------------------------------------------------------------
     result <- with(x$par,
@@ -190,11 +190,11 @@ sv.sb.iso <- function(x, h, ...) {
 #' @param  x  variogram model (\code{\link{svarmod}} object).
 #' @param  h  vector (isotropic case) or matrix of lags values.
 #' @param  sill  variance \eqn{C(0) = \sigma^2} or pseudo-sill (unbounded variograms).
-#' @export
 #' @return
 #' A vector of (pseudo) covariance values \eqn{C(h_i) = \sigma^2 - \gamma(h_i)}.
 #' @seealso
 #' \code{\link{sv}}.
+#' @export
 #--------------------------------------------------------------------
 covar  <- function(x, h, sill = x$sill) {
     if (!inherits(x, "svarmod"))

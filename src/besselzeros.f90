@@ -6,7 +6,8 @@
 !       disc_sbv      ptos de discretización para un modelo de variograma de 
 !                     Shapiro-Botha (R "disc_sbv")
 !
-!   Autor: (c) Ruben Fernandez-Casal        Ultima revision: Mar 2013
+!   Autor: (c) Ruben Fernandez-Casal                Creacion: Abr 2002
+!   Revisiones: Mar 2013
 !-----------------------------------------------------------------------
 
 !     ------------------------------------------------------------------
@@ -22,9 +23,6 @@
 !         dim = dimensión correspondiente                             (I)
 !         ((dim-2.0)/2.0 orden de la función de Bessel)
 !         rango = máximo salto                                        (I)
-!
-!     Autor:R. Fernandez-Casal                           
-!     Fecha ultima revision: Abr 2002
 !     ------------------------------------------------------------------
       SUBROUTINE disc_sbv(nx, x, dim, rango)
       IMPLICIT NONE
@@ -59,7 +57,6 @@
 !         nt = nº de ceros                                            (I)
 !         a = orden de la función de Bessel                           (I)
 !         c(nt) = ceros (ordenados)                                   (O)
-!
 !     ------------------------------------------------------------------
       SUBROUTINE besselzeros(nt, a, c)
       IMPLICIT NONE
@@ -294,12 +291,11 @@
 !     [pythag]    Función utilizada por la subrutina tql2 
 !                 (paquete EISPACK).
 !     ------------------------------------------------------------------
+!     finds dsqrt(a**2+b**2) without overflow or destructive underflow
+!     ------------------------------------------------------------------
       double precision function pythag(a,b)
       double precision a,b
 !
-!     finds dsqrt(a**2+b**2) without overflow or destructive underflow
-!
-!     ------------------------------------------------------------------
       double precision p,r,s,t,u
       p = dmax1(dabs(a),dabs(b))
       if (p .eq. 0.0d0) go to 20

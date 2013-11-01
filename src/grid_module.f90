@@ -1,6 +1,10 @@
-
 !-----------------------------------------------------------------------
     module grid_module
+!-----------------------------------------------------------------------
+!   Due to the CRAN policy requirement of using only Fortran 90/95, 
+!   the implementation of additional grid types is postponed until Fortran 
+!   compilers used at CRAN (specially in the case of Mac OS X) support the 
+!   required Fortran 2003 features (mainly type-bound procedures).
 !-----------------------------------------------------------------------
 !   Modulo clases rejilla (grid) y rejilla binning (grid_bin)
 !       type(grid) :: g
@@ -35,63 +39,32 @@
 !       - Crear clase grid_data (intermedia entre grid y grid_bin?)
 !       - procedure :: end type-bound / final
 !
-!   Autor: (c) Ruben Fernandez-Casal    Ultima revision: Oct 2012  Nov 2013
+!   Autor: (c) Ruben Fernandez-Casal       
+!   Fecha revision: Oct 2012, Nov 2013
 !-----------------------------------------------------------------------
         implicit none
 
 !       ----------------------------------------------------------------
-        type grid
+        type grid_bin
 !       ----------------------------------------------------------------
-!       Indice de una rejilla multidimensional
+!       Rejilla binning multidimensional
 !       ----------------------------------------------------------------
+!       type grid
             integer ndim, ngrid, igrid
             integer, allocatable :: n(:), ii(:)
 !           n(g%ndim) = NBM(1..NDimBM)= Nº nodos de la rejilla binning
             real*8, allocatable :: min(:), max(:), lag(:)
-        contains
-            procedure :: set => set_grid
-!           final :: end_grid
-            procedure :: end => end_grid
-            procedure :: ind
-            procedure :: set_ind
-            procedure :: incii
-        end type
-
-!       ----------------------------------------------------------------
-        type, extends(grid) :: grid_den
-!       ----------------------------------------------------------------
-!       Rejilla binning multidimensional densidad
-!           bin%w(1:bin%ngrid) = Peso/frecuencia nodo binning
-!       ----------------------------------------------------------------
+!       type, extends(grid) :: grid_den
             integer ny    !NBMc
             real*8, allocatable :: w(:)
-        contains
-            procedure :: set_bin_den
-!           final :: end_bin_den
-            procedure :: end_bin_den
-        end type
-
-
-!       ----------------------------------------------------------------
-        type, extends(grid_den) :: grid_bin
-!       ----------------------------------------------------------------
-!       Rejilla binning multidimensional datos
-!           bin%y(1:bin%ngrid) = Valor nodo binning
-!           bin%med = Media ponderada de BMy (media de los datos binning)
-!       ----------------------------------------------------------------
+!       type, extends(grid_den) :: grid_bin
             real*8 :: med
             real*8, allocatable :: y(:)
-        contains
-            procedure :: set_bin => set_grid_bin
-!           final :: end_grid_bin
-            procedure :: end_bin => end_grid_bin
         end type
-
 
 !   --------------------------------------------------------------------
     contains
 !   --------------------------------------------------------------------
-
 
 !       ----------------------------------------------------------------
         subroutine set_grid(g, ndim, n, min, max)
@@ -99,7 +72,7 @@
 !       Establece la rejilla
 !       ----------------------------------------------------------------
         implicit none
-        class(grid) :: g
+        type(grid_bin) :: g
         integer ndim, n(ndim)
         real*8 min(ndim), max(ndim)
 !       ----------------------------------------------------------------
@@ -120,7 +93,7 @@
 !       Avoid rank mismatch in argument(rank-1 and scalar)
 !       ----------------------------------------------------------------
         implicit none
-        class(grid) :: g
+        type(grid_bin) :: g
         integer n
         real*8 min, max
 !       ----------------------------------------------------------------
@@ -140,7 +113,7 @@
 !       Libera memoria
 !       ----------------------------------------------------------------
         implicit none
-        class(grid) :: g
+        type(grid_bin) :: g
 !       ----------------------------------------------------------------
             deallocate(g%n, g%ii, g%min, g%max, g%lag)
         return
@@ -156,7 +129,7 @@
 !       (se evalua empleando una regla tipo Horner)
 !       ----------------------------------------------------------------
         implicit none
-        class(grid) :: g
+        type(grid_bin) :: g
         integer ii(g%ndim)
         integer i, k
 !       ----------------------------------------------------------------
@@ -176,12 +149,13 @@
 !       PENDIENTE: VERIFICAR RANGO INDICES
 !       ----------------------------------------------------------------
         implicit none
-        class(grid) :: g
+        type(grid_bin) :: g
         integer ii(g%ndim)
             g%ii = ii
             g%igrid = ind(g, ii)
         return
         end subroutine set_ind
+
 
 !       ----------------------------------------------------------------
         subroutine incii(g)
@@ -189,12 +163,12 @@
 !       NO VERIFICA RANGOS
 !       ----------------------------------------------------------------
         implicit none
-        class(grid) :: g
+        type(grid_bin) :: g
         integer j
 !           ------------------------------------------------------------
-            g%igrid = g%igrid+1
+            g%igrid = g%igrid + 1
             do j = 1, g%ndim
-                g%ii(j) = g%ii(j)+1
+                g%ii(j) = g%ii(j) + 1
                 if (g%ii(j) <= g%n(j)) return
                 g%ii(j) = 1
             end do
@@ -207,7 +181,7 @@
 !       Establece la rejilla binning (lineal) para densidad
 !       ----------------------------------------------------------------
         implicit none
-        class(grid_den) :: g
+        type(grid_bin) :: g
         integer nd, nbin(nd), ny
         real*8  x(nd,ny)
 !
@@ -221,9 +195,9 @@
             maxx = minx
             do i = 2, ny
                 do j = 1, nd
-                    if (minx(j)>x(j, i)) then
+                    if (minx(j) > x(j, i)) then
                         minx(j) = x(j, i)
-                    else if (maxx(j)<x(j, i)) then
+                    else if (maxx(j) < x(j, i)) then
                         maxx(j) = x(j, i)
                     end if
                 end do
@@ -241,10 +215,10 @@
             niinc = 2**nd
             ii = 0
             do i = 1, niinc
-                do j = 1, nd-1
+                do j = 1, nd - 1
                     if (ii(j) > 1) then
                         ii(j) = 0
-                        ii(j+1) = ii(j+1)+1
+                        ii(j+1) = ii(j+1) + 1
                     else
                         exit
                     end if
@@ -268,7 +242,8 @@
                         tmp = tmp * w(iinc(j, k) + 1, j)
                     end do
                     ! if (tmp < epsilon) cycle
-                    ib = g%ind(ii)
+!                   ib = g%ind(ii)
+                    ib = ind(g, ii)
                     g%w(ib) = g%w(ib) + tmp
                 end do
             end do
@@ -281,8 +256,9 @@
 !       Libera memoria
 !       ----------------------------------------------------------------
         implicit none
-        class(grid_den) :: g
-            call g%end
+        type(grid_bin) :: g
+!           call g%end
+            call end_grid(g)
             deallocate(g%w)
         return
         end subroutine end_bin_den
@@ -293,7 +269,7 @@
 !       Establece la rejilla binning (lineal)
 !       ----------------------------------------------------------------
         implicit none
-        class(grid_bin) :: g
+        type(grid_bin) :: g
         integer nd, nbin(nd), ny
         real*8  x(nd,ny), y(ny)
 !
@@ -355,7 +331,8 @@
                         tmp = tmp * w(iinc(j, k) + 1, j)
                     end do
                     ! if (tmp < epsilon) cycle
-                    ib = g%ind(ii)
+!                   ib = g%ind(ii)
+                    ib = ind(g, ii)
                     g%y(ib) = g%y(ib) + tmp * y(i)
                     g%w(ib) = g%w(ib) + tmp
                 end do
@@ -377,8 +354,9 @@
 !       Libera memoria
 !       ----------------------------------------------------------------
         implicit none
-        class(grid_bin) :: g
-            call g%end
+        type(grid_bin) :: g
+!           call g%end
+            call end_grid(g)
             deallocate(g%y, g%w)
         return
         end subroutine end_grid_bin
@@ -403,13 +381,15 @@
     real*8  x(nd,ny), y(ny)
     real*8  bin_min(nd), bin_max(nd), bin_med, bin_y(*), bin_w(*)
     type(grid_bin) :: bin
-        call bin%set_bin(nd, nbin, x, ny, y) ! Establece la rejilla binning (lineal)
+!       call bin%set_bin(nd, nbin, x, ny, y) ! Establece la rejilla binning (lineal)
+        call set_grid_bin(bin, nd, nbin, x, ny, y)
         bin_min = bin%min
         bin_max = bin%max
         bin_med = bin%med
         bin_y(1:bin%ngrid) = bin%y
         bin_w(1:bin%ngrid) = bin%w
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
     return
     end subroutine binning
 
@@ -427,12 +407,14 @@
     integer nd, nbin(nd), ny
     real*8  x(nd,ny)
     real*8  bin_min(nd), bin_max(nd), bin_w(*)
-    type(grid_den) :: bin
-        call bin%set_bin_den(nd, nbin, x, ny) ! Establece la rejilla binning (lineal)
+    type(grid_bin) :: bin
+!       call bin%set_bin_den(nd, nbin, x, ny) ! Establece la rejilla binning (lineal)
+        call set_bin_den(bin, nd, nbin, x, ny)
         bin_min = bin%min
         bin_max = bin%max
         bin_w(1:bin%ngrid) = bin%w
-        call bin%end_bin_den
+!       call bin%end_bin_den
+        call end_bin_den(bin)
     return
     end subroutine bin_den
 
@@ -450,14 +432,16 @@
     implicit none
     integer nd, nbin(nd), ngrid, ny
     real*8  bin_min(nd), bin_max(nd)
-    type(grid) :: g
+    type(grid_bin) :: g
     real*8  x(nd,ny), gy(ngrid), y(ny)
 !       ----------------------------------------------------------------
 !       Establecer la rejilla
-        call g%set(nd, nbin, bin_min, bin_max)
+!       call g%set(nd, nbin, bin_min, bin_max)
+        call set_grid(g, nd, nbin, bin_min, bin_max)
 !       Interpolación
         call interp_grid(g, gy, x, ny, y)
-        call g%end
+!       call g%end
+        call end_grid(g)
     return
     end subroutine interp_data_grid
 
@@ -471,7 +455,7 @@
 !   ----------------------------------------------------------------
     use grid_module
     implicit none
-    type(grid) :: g
+    type(grid_bin) :: g
     integer ny
     real*8  x(g%ndim, ny), gy(g%ngrid), y(ny)
 !
@@ -514,7 +498,8 @@
                     ii(j) = iib(j) + iinc(j, k)
                     tmp = tmp * w(iinc(j, k) + 1, j)
                 end do
-                ib = g%ind(ii)
+!               ib = g%ind(ii)
+                ib = ind(g, ii)
                 y(i) = y(i) + tmp * gy(ib)
             end do
         end do

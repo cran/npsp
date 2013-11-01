@@ -57,6 +57,7 @@ svar.bin <- function(x, ...) UseMethod("svar.bin")
 #' @inheritParams np.svar.default
 #' @param estimator character, estimator name (e.g. "classical"). See "Details" below.
 #' @method svar.bin default
+#' @export
 svar.bin.default <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nlags, 
                     estimator = c("classical", "modulus"), ...) {    
 # Returns an S3 object of class "svar.bin" (extends "bin.data")

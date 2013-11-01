@@ -30,7 +30,6 @@
 #' 
 #' @param  x   numeric vector (on which the kappa function will be evaluated).
 #' @param  dk  dimension of the kappa function.
-#' @export
 #' @return
 #' A vector with the coefficients of an extended Shapiro-Botha variogram model. 
 #' @references
@@ -45,6 +44,7 @@
 #' curve(kappasb(x/5, 0), xlim = c(0, 6*pi), ylim = c(-1, 1), lty = 2)
 #' for (i in 1:10) curve(kappasb(x, i), col = gray((i-1)/10), add = TRUE)
 #' abline(h = 0, lty = 3)
+#' @export
 kappasb <- function(x, dk = 0) {
 #--------------------------------------------------------------------
   if ( zeros <- any(index <- x < sqrt(.Machine$double.eps)) ) {
@@ -110,6 +110,7 @@ kappasb <- function(x, dk = 0) {
 #' h <- seq(0, 1, length = 100)
 #' plot(h, kappasb(x * h, 0), type="l", ylim = c(0, 1))
 #' abline(h = 0.05, lty = 2)
+#' @export
 disc.sb <- function(nx, dk = 0, rmax = 1) {   
 #--------------------------------------------------------------------
     if (dk == 0) 
@@ -207,6 +208,7 @@ disc.sb <- function(nx, dk = 0, rmax = 1) {
 #'   and Data Analysis}, \bold{11}, 87-96. 
 #' @seealso
 #' \code{\link{svarmod.sb.iso}}, \code{\link{disc.sb}}.
+#' @export
 #--------------------------------------------------------------------
 fitsvar.sb.iso <- function(esv, dk = ncol(esv$data$x), nx = NULL, rmax = esv$grid$max, 
         min.contrib = 15, method = c("cressie", "equal", "npairs", "gstat"), 

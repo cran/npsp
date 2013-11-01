@@ -13,7 +13,7 @@ library(fields)                               # required for drape.plot()
 #--------------------------------------------------------------------
 # 2D data example (regularly spaced)
 #--------------------------------------------------------------------
-
+set.seed(1)
 nx <- c(40, 40)                               # ndata =  prod(nx)
 x1 <- seq(-1, 1, length.out=nx[1])
 x2 <- seq(-1, 1, length.out=nx[2])

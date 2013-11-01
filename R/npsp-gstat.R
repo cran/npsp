@@ -30,9 +30,9 @@ NULL
 #' defined in \pkg{gstat}).
 #' @param  x   variogram model object (used to select a method).
 #' @param  ... further arguments passed to or from other methods.
-#' @export
 #' @seealso
 #' \code{\link[gstat]{vgm}}, \code{\link{svarmod}}.
+#' @export
 #--------------------------------------------------------------------
 as.vgm <- function(x, ...) UseMethod("as.vgm")
 # PENDENTE: @examples
@@ -41,7 +41,11 @@ as.vgm <- function(x, ...) UseMethod("as.vgm")
 #--------------------------------------------------------------------
 #' @rdname npsp-gstat
 #' @method as.vgm variomodel
-as.vgm.variomodel <- function(x, ...) gstat::as.vgm.variomodel(x)
+#' @export
+as.vgm.variomodel <- function(x, ...) {
+    if (!require(gstat)) stop("'gstat' package required.")    
+    return(gstat::as.vgm.variomodel(x))
+}    
 # PENDENTE: renombrar rutina en gstat
 # gstat::as.vgm.variomodel <- function (m) {
 #    model = NULL
@@ -73,12 +77,13 @@ as.vgm.variomodel <- function(x, ...) gstat::as.vgm.variomodel(x)
 #--------------------------------------------------------------------
 #' @rdname npsp-gstat
 #' @method as.vgm svarmod
+#' @export
 as.vgm.svarmod <- function(x, ...)  as.vgm.variomodel(as.variomodel.svarmod(x))
 #--------------------------------------------------------------------
 
 
 #--------------------------------------------------------------------
-# vgm.tab.svarmod(x, h = seq(0, max = x$range, length = 1000), sill = x$sill, ...)
+# vgm.tab.svarmod(x, h = seq(0, x$range, length = 1000), sill = x$sill, ...)
 #--------------------------------------------------------------------
 #' @rdname npsp-gstat
 #' @param  h vector of lags at which the covariogram is evaluated.
@@ -86,6 +91,7 @@ as.vgm.svarmod <- function(x, ...)  as.vgm.variomodel(as.variomodel.svarmod(x))
 #' @details \code{vgm.tab.svarmod} converts a \code{svarmod} object to a 
 #' \code{variogramModel}-\code{\link{class}} object of type \code{"Tab"} 
 #' (one-dimensional covariance table). 
+#' @export
 vgm.tab.svarmod <- function(x, h = seq(0, x$range, length = 1000), sill = x$sill, ...) {
 #--------------------------------------------------------------------
     if (!require(gstat)) stop("'gstat' package required.")    
@@ -93,7 +99,7 @@ vgm.tab.svarmod <- function(x, h = seq(0, x$range, length = 1000), sill = x$sill
         stop("argument 'x' must be of class (or extending) 'svarmod'.")
     if (x$type != "isotropic")
         stop("'gstat' variogram model 'Tab' only accepts isotropic variograms.")        
-    return(vgm(model = "Tab",  covtable = cbind(h, covar(x, h, sill = sill)) ))
+    return(gstat::vgm(model = "Tab",  covtable = cbind(h, covar(x, h, sill = sill)) ))
 }
 #if (model == "Tab" && !missing(covtable)) {
 #    table = as.matrix(covtable)
@@ -113,6 +119,7 @@ vgm.tab.svarmod <- function(x, h = seq(0, x$range, length = 1000), sill = x$sill
 #' @rdname npsp-gstat
 #' @method as.vgm sb.iso
 #' @details \code{as.vgm.sb.iso} is an alias of \code{vgm.tab.svarmod}.
+#' @export
 as.vgm.sb.iso <- vgm.tab.svarmod
 # CUIDADO:
 #     as.vgm.svarmod(x, length.table = 1000, max = x$range, sill = x$sill, ...)

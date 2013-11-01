@@ -1,4 +1,9 @@
 !-----------------------------------------------------------------------
+!   Due to the CRAN policy requirement of using only Fortran 90/95, 
+!   the implementation of additional grid types is postponed until Fortran 
+!   compilers used at CRAN (specially in the case of Mac OS X) support the 
+!   required Fortran 2003 features (mainly type-bound procedures).
+!-----------------------------------------------------------------------
 !   [lp_module.f90]   Modulo para la estimación lineal/polinómica local
 !                       multidimensional
 !   Interfaces con R (en "locpol.bin.R"):
@@ -7,7 +12,8 @@
 !       lp_data_grid  Estimador a partir de datos en una rejilla ("locpol.data.grid", "np.den.bin.den")  
 !       predict_locpol    Estimación y matriz hat en observaciones ("predict.locpol.bin")
 !
-!   (c) Ruben Fernandez-Casal       Fecha revisión: Abr 2007, Oct 2012, Jun 2013, Oct 2013
+!   Autor: (c) Ruben Fernandez-Casal    
+!   Fecha revision: Abr 2007, Oct 2012, Jun 2013, Oct 2013
 !-----------------------------------------------------------------------
 
 !   --------------------------------------------------------------------
@@ -34,8 +40,8 @@
     integer NDelCV(ND)
     real*8, external :: KTWMD
 !   --------------------------------------------------------------------
-!       call set_bin(nd, nbin, x, ny, y, bin_min, bin_lag, bin_med, bin_y, bin_w)
-        call bin%set_bin(nd, nbin, x, ny, y) ! Establece la rejilla binning (lineal)
+!       call bin%set_bin(nd, nbin, x, ny, y) ! Establece la rejilla binning (lineal)
+        call set_grid_bin(bin, nd, nbin, x, ny, y)
 !       Estimación y obtención matriz Hat
         NDelCV = ncv
 !       SUBROUTINE lp(bin, h, FNucMD, GetE, lpe, degree, GetDERIV, deriv, ldderiv,  &
@@ -48,7 +54,9 @@
         bin_med = bin%med
         bin_y(1:bin%ngrid) = bin%y
         bin_w(1:bin%ngrid) = bin%w
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
+
     return
     end subroutine lp_raw
 
@@ -78,8 +86,8 @@
     real*8, external :: KTWMD
 !   --------------------------------------------------------------------
 !       Establecer la rejilla
-!       call bin%set_bin(nd, nbin, x, ny, y)
-        call bin%set(nd, nbin, bin_min, bin_max)
+!       call bin%set(nd, nbin, bin_min, bin_max)
+        call set_grid(bin, nd, nbin, bin_min, bin_max)
 !       Asignar memoria rejilla binning
         allocate(bin%y(bin%ngrid), bin%w(bin%ngrid))
         bin%med = bin_med
@@ -91,7 +99,8 @@
         call lp(bin, h, KTWMD, .true., lpe, degree,                             &
                     ideriv == 1, deriv, ntbin, ihat == 1, hatlp, ntbin,         &
    &                NDelCV, rm, rss, nrl0)
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
     return
     end subroutine lp_bin
 
@@ -126,7 +135,8 @@
 !   --------------------------------------------------------------------
 !       Establecer la rejilla
 !       call bin%set_bin(nd, nbin, x, ny, y)
-        call bin%set(nd, nbin, bin_min, bin_max)
+!       call bin%set(nd, nbin, bin_min, bin_max)
+        call set_grid(bin, nd, nbin, bin_min, bin_max)
 !       Asignar memoria rejilla binning
         allocate(bin%y(bin%ngrid), bin%w(bin%ngrid))
         bin%med = bin_med
@@ -140,7 +150,8 @@
         call lp(bin, h, KTWMD, .true., lpe, degree,                             &
                     ideriv == 1, deriv, ntbin, ihat == 1, hatlp, ntbin,         &
    &                NDelCV, rm, rss, nrl0)
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
     return
     end subroutine lp_data_grid
 
@@ -263,7 +274,6 @@
 !   --------------------------------------------------------------------
     use grid_module
     use linreg_module
-!   USE ModBinMD
     implicit none
     type(grid_bin) :: bin
     integer :: nd, ny
@@ -282,8 +292,6 @@
    &        VHAT(bin%ngrid), WSum, tmp
     LOGICAL LOUT, LDELCV, LError
     integer, ALLOCATABLE :: iindb(:,:)
-!   integer, external :: IERCD, N1RTY
-!   real*8, external :: DSUM, DDOT
 !   --------------------------------------------------------------------
         nd = bin%ndim
         ngrid = bin%ngrid     ! ntotbm
@@ -302,14 +310,16 @@
 !       Recorrer rejilla y evaluar núcleo
         indb = 1
         bin%ii = 1
-        CALL bin%set_ind(bin%ii)
+!       CALL bin%set_ind(bin%ii)
+        bin%igrid = ind(bin, bin%ii)
         DO i = 1, ngrid
 !           bin%igrid=bin%ind(ii) ! ii0(1:nd)=iBM(1:nd,i0)
 !           Indice multidimensional correspondiente al indice unidimensional i0
             DO j = 1, nd
                 d(j) = (bin%ii(j)-1.0) * bin%lag(j)
-            END DO
-            CALL DMURRV(nd, nd, IH, nd, nd, d, 1, nd, t)
+            END DO           
+!           CALL DMURRV(nd, nd, IH, nd, nd, d, 1, nd, t)
+            t = matmul(IH, d)
             tmp = FNucMD(t, nd)/deth
             Bk(i) = tmp
 !           Calcular rango datos estimación
@@ -318,7 +328,8 @@
                     IF (bin%ii(j) > indb(j)) indb(j) = bin%ii(j)
                 END DO
             END IF
-            CALL bin%incii()    ! Incrementa el indice (uni y multi dimensional)
+!           CALL bin%incii()    ! Incrementa el indice (uni y multi dimensional)
+            CALL incii(bin)
         END DO  !   DO i = 1, ngrid
 !       Preparar rejilla MD con posiciones relativas
         indb = indb - 1
@@ -348,7 +359,8 @@
         CALL ModRegLinInit(nindb, NINDRL)
 !       Recorrer rejilla binning
         bin%ii = 1
-        CALL bin%set_ind(bin%ii)
+!       CALL bin%set_ind(bin%ii)
+        bin%igrid = ind(bin, bin%ii)
         DO i0 = 1, ngrid
 !           Indice multidimensional correspondiente al indice unidimensional i0
             ii0 = bin%ii
@@ -367,8 +379,10 @@
                     IF (iinc(j) > NDelCV(j)) LDELCV = .FALSE.
                 END DO
                 IF (LOUT.OR.LDELCV) CYCLE
-                i = bin%ind(ii)                 ! Indice unidimensional equivalente
-                j = bin%ind(iinc)               ! iiBM(iinc)
+!               i = bin%ind(ii)                 ! Indice unidimensional equivalente
+                i = ind(bin, ii)
+!               j = bin%ind(iinc)               ! iiBM(iinc)
+                j = ind(bin, iinc)
                 tmp = DSQRT( bin%w(i) * Bk(j) ) ! bin%w = Peso/frecuencia nodo binning
                 IF (tmp < Epsilon) CYCLE
                 NRL = NRL+1
@@ -428,7 +442,8 @@
                 RMNP = RMNP + bin%w(i0) * tmp/DBLE(bin%ny)
                 RSSNP = RSSNP + bin%w(i0) * tmp * tmp
             END IF
-            CALL bin%incii()    ! Incrementa el indice (uni y multi dimensional)
+!           CALL bin%incii()    ! Incrementa el indice (uni y multi dimensional)
+            CALL incii(bin)
         END DO  ! DO i0 = 1, ngrid
 !       Verificar missing values
 !        IF (nrl0 > 0) call rwarn('Not enough data in some neighborhoods.')
@@ -505,7 +520,8 @@
                     tmp = tmp * w(iinc(j, k) + 1, j)
                 end do
                 ! Cuidado puede ocurrir ibinw(i, k) = tmp = 0  y g%w(ib) = 0
-                ib = g%ind(ii)
+!               ib = g%ind(ii)
+                ib = ind(g, ii)
                 lpy(i) = lpy(i) + tmp * lpe(ib)
 !--------------------------------------
 !               Opcional si matriz hat:               
@@ -562,7 +578,8 @@
 !       ----------------------------------------------------------------
 !       Establecer la rejilla
 !       call bin%set_bin(nd, nbin, x, ny, y)
-        call bin%set(nd, nbin, bin_min, bin_max)
+!       call bin%set(nd, nbin, bin_min, bin_max)
+        call set_grid(bin, nd, nbin, bin_min, bin_max)
 !       Asignar memoria rejilla binning
         allocate(bin%y(bin%ngrid), bin%w(bin%ngrid))
         bin%med = bin_med
@@ -571,6 +588,7 @@
         bin%ny = ny
 !       Estimación y obtención matriz Hat
         call predict_locpol_bin(bin, lpe, ihat == 1, hatlp, x, lpy, hatlpy)
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
     return
     end subroutine predict_locpol

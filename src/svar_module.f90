@@ -1,12 +1,13 @@
 !-----------------------------------------------------------------------
-!   [svar_module.f90]   Modulo para la estimación lineal local de un
+!   [svar_module.f90]   Modulo para la estimacion lineal local de un
 !                       semivariograma multidimensional
 !
 !   Interfaces con R:
 !       svar_iso_np     Estimador np del svar y rejilla binning (R "svarisonp")
 !       svar_iso_bin    Rejilla binning y estimación clásica/robusta (R "svariso")
 !
-!   Autor: (c) Ruben Fernandez-Casal    Ultima revision: Ago 2012, Jun 2013
+!   Autor: (c) Ruben Fernandez-Casal                Creacion: Ago 2012
+!   Revision: Jun 2013, Nov 2013
 !-----------------------------------------------------------------------
 
 
@@ -15,7 +16,7 @@
 !   --------------------------------------------------------------------
 !       Establece la rejilla binning (lineal) para la estimación np de un
 !       semivariograma isotrópico.
-!           g       = rejilla binning (class(grid_bin))
+!           g       = rejilla binning (type(grid_bin))
 !           nlag    = número de saltos
 !           minlag  = mínimo salto (si <0 se toma el valor por defecto maxlag/nlags)
 !           maxlag  = máximo salto
@@ -26,8 +27,6 @@
 !       NOTAS:
 !           - Se ignoran los saltos fuera del rango [g%min-g%lag, g%max+g%lag]
 !           - g%ny = Nº total de pares = (ny*(ny-1))/2 si se consideraran todos los posibles
-!
-!   Autor: (c) Ruben Fernandez-Casal    Ultima revision: Ago 2012
 !   --------------------------------------------------------------------
     use grid_module
     implicit none
@@ -103,8 +102,6 @@
 !       - Opción/nueva rutina para establecer rejilla binning a partir de parámetros
 !         (calculos manteniendo datos)
 !   OJO: rejilla unidimensional (e.g. ndelcv(1))
-!
-!   Autor: (c) Ruben Fernandez-Casal    Ultima revision: Ago 2012, Jun 2013
 !   --------------------------------------------------------------------
     use grid_module
     implicit none
@@ -128,7 +125,8 @@
         bin_med = bin%med
         bin_y = bin%y
         bin_w = bin%w
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
     return
     end subroutine svar_iso_np
 
@@ -159,7 +157,8 @@
         bin_med = bin%med
         bin_y = bin%y
         bin_w = bin%w
-        call bin%end_bin
+!       call bin%end_bin
+        call end_grid_bin(bin)
     return
     end subroutine svar_iso_bin
 

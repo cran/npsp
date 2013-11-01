@@ -18,7 +18,7 @@
   \method{as.data.frame}{grid.par} (x,
     row.names = dimnames(x), optional = FALSE, ...)
 
-  \method{is}{data.grid} (x)
+  is.data.grid(x)
 
   \method{dimnames}{data.grid} (x)
 

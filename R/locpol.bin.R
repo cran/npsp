@@ -106,7 +106,7 @@ locpol <- function(x, ...) UseMethod("locpol")
 #'             xlab = ns[1], ylab = ns[2])
 #' contour(coorvs[[1]], coorvs[[2]], log(lp$est), add = TRUE)
 #' with(earthquakes, points(lon, lat, pch = 20))
-# @export
+#' @export
 locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(drv), 
           drv = FALSE, hat.bin = FALSE, ncv = 0, set.NA = FALSE, ...) {    
 # Returns an S3 object of class "locpol.bin" (locpol + bin data + grid parameters)
@@ -200,7 +200,7 @@ locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(
 #--------------------------------------------------------------------
 #' @rdname locpol
 #' @method locpol bin.data
-# @export
+#' @export
 locpol.bin.data <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, 
                                         hat.bin = FALSE, ncv = 0, ...) {    
 # Returns an object of class "locpol.bin" (from a "bin.data"-class object x)
@@ -273,10 +273,10 @@ locpol.bin.data <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FAL
 #' @method locpol svar.bin
 #' @return \code{locpol.svar.bin} returns an S3 object of class \code{\link{np.svar}} 
 #' (locpol semivar + bin semivar + grid par.).
-# @seealso \code{\link{svarisonp}}, \code{\link{svar.bin}}.
-# @export
+#' @export
 locpol.svar.bin <- function(x, h = NULL, degree = 1, drv = FALSE, 
                                         hat.bin = FALSE, ncv = 0, ...){
+# @seealso \code{\link{svarisonp}}, \code{\link{svar.bin}}.
 #--------------------------------------------------------------------
     result <- locpol.bin.data(x, h = h, degree = degree, drv = drv, 
                   hat.bin = hat.bin, ncv = ncv, ...)
@@ -291,7 +291,7 @@ locpol.svar.bin <- function(x, h = NULL, degree = 1, drv = FALSE,
 #' @method locpol bin.den
 #' @return \code{locpol.bin.den} returns an S3 object of class \code{\link{np.den}} 
 #' (locpol den + bin den + grid par.).
-# @export
+#' @export
 locpol.bin.den <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, 
                               ncv = 0, ...) {    
 #--------------------------------------------------------------------
