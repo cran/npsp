@@ -21,10 +21,27 @@
   weights. Main calculations are performed in FORTRAN using
   the LAPACK library.
 
+  \code{\link{np.svariso.corr}} computes a bias-corrected
+  nonparametric semivariogram estimate using an iterative
+  algorithm similar to that described in Fernandez-Casal
+  and Francisco-Fernandez (2014). This procedure tries to
+  correct the bias due to the direct use of residuals,
+  obtained from a nonparametric estimation of the trend
+  function, in semivariogram estimation.
+
   \code{\link{fitsvar.sb.iso}} fits a `nonparametric'
   isotropic Shapiro-Botha variogram model by WLS.
   Currently, only isotropic semivariogram estimation is
   supported.
+
+  There are also functions for plotting data joint with a
+  legend representing a continuous color scale.
+  \code{\link{splot}} allows to combine a standard R plot
+  with a legend. \code{\link{spoints}},
+  \code{\link{simage}} and \code{\link{spersp}} draw the
+  corresponding high-level plot with a legend strip for the
+  color scale. These functions are based on
+  \code{\link[fields]{image.plot}} of package \pkg{fields}.
 
   Among the other functions intended for direct access by
   the user, the following could be emphasized:
@@ -53,10 +70,15 @@
   or suggestions to \url{rubenfcasal@gmail.com}.
 }
 \references{
-  Fernandez Casal R., Gonzalez Manteiga W. and Febrero
-  Bande M. (2003) Flexible Spatio-Temporal Stationary
-  Variogram Models, \emph{Statistics and Computing},
-  \bold{13}, 127-136.
+  Fernandez-Casal R. and Francisco-Fernandez M. (2014)
+  Nonparametric bias-corrected variogram estimation under
+  non-constant trend, \emph{Stoch. Environ. Res. Ris.
+  Assess}, \bold{28}, 1247-1259.
+
+  Fernandez-Casal R., Gonzalez-Manteiga W. and
+  Febrero-Bande M. (2003) Flexible Spatio-Temporal
+  Stationary Variogram Models, \emph{Statistics and
+  Computing}, \bold{13}, 127-136.
 
   Rupert D. and Wand M.P. (1994) Multivariate locally
   weighted least squares regression.  \emph{The Annals of

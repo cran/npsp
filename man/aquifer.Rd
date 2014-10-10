@@ -34,7 +34,7 @@
 \examples{
 str(aquifer)
 summary(aquifer)
-with(aquifer, plot(lon, lat))
+with(aquifer, spoints(lon, lat, head, main = "Wolfcamp aquifer"))
 }
 \references{
   Cressie, N. (1989) Geostatistics.  \emph{The American

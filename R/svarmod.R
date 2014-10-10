@@ -2,12 +2,16 @@
 #   svarmod.R (npsp package)
 #--------------------------------------------------------------------
 #   svarmod  S3 class and methods
-#       svarmod.sb.iso
-#   svarmodels
+#       svarmod(model, type, par, nugget, sill, range)
+#       svarmod.sb.iso(dk, x, z, nu, range, sill)
+#   svarmodels(type)
 #   svm  S3 generic
-#       svm.sb.iso
-#   covar(x, h, sill = x$sill)
+#       sv.default(x, h, ...)
+#       sv.svarmod(x, h, ...)
+#       sv.sb.iso(x, h, ...)
 #
+#   (c) R. Fernandez-Casal         Last revision: Apr Sep 2013
+#--------------------------------------------------------------------
 # NOTA: para modelos isotrópicos paramétricos se toma (provisionalmente) 
 #       como referencia geoR
 #
@@ -15,8 +19,6 @@
 #   - @examples
 #   - S3 method
 #   - svar.vgm
-#
-#   (c) R. Fernandez-Casal         Last revision: Apr Sep 2013
 #--------------------------------------------------------------------
 
  
@@ -49,8 +51,8 @@ svarmod <- function(model, type = "isotropic", par = NA,
                       nugget = NULL, sill = NULL, range = NULL) {
 # Define a (semi)variogram model
 # En los modelos paramétricos:
-#   names(par) <- c(psill, phi, nugget, kappa)
-#   phi = escale parameter
+#   names(par) <- c('psill', 'phi', 'nugget', 'kappa')
+#   phi = scale parameter
 # PENDIENTE: ASIGNAR nugget, sill Y range AUTOMÁTICAMENTE
 #--------------------------------------------------------------------
     model <- match.arg(model, svarmodels(type))
@@ -67,7 +69,7 @@ svarmod <- function(model, type = "isotropic", par = NA,
     )
     result <- list(model = model, type = type, par = par,
                       nugget = nugget, sill = sill, range = range)
-    oldClass(result) <- "svarmod"
+    oldClass(result) <- c("isotropic", "svarmod")
     return(result)
 } # svarmod
 # svar.mod <- svarmod
@@ -97,7 +99,7 @@ svarmod.sb.iso <- function( dk, x, z, nu, range, sill = nu) {
     result <- svarmod(model = svarmodels()["SB"], type = "isotropic",
           par = list(dk = dk, x = x, z = z, nu = nu),
           nugget = nu - sum(z), sill = sill, range = range)
-    oldClass(result) <- c("sb.iso", "svarmod")
+    oldClass(result) <- c("sb.iso", "isotropic", "svarmod")
     return(result)
 }
 
@@ -139,7 +141,7 @@ svarmodels <- function(type = "isotropic") {
 #' Evaluates an \code{svarmod} object \code{x} at lags \code{h} (S3 generic function).
 #' 
 #' @param  x  variogram model (\code{\link{svarmod}} object).
-#' @param  h  vector (isotropic case) or matrix of lags values.
+#' @param  h  vector (isotropic case) or matrix of lag values.
 #' @param  ... further arguments passed to or from other methods.
 #' @return
 #' A vector of semivariance values \eqn{\gamma(h_i)}.
@@ -154,14 +156,14 @@ sv <- function(x, h, ...) UseMethod("sv")
 #' @rdname sv
 #' @method sv default
 #' @export
- sv.default <- function(x, h, ...) stop("Invalid variogram object")
+sv.default <- function(x, h, ...) stop("Invalid variogram object")
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
 #' @rdname sv
 #' @method sv svarmod
 #' @export
- sv.svarmod <- function(x, h, ...) as.vgm.svarmod(x, h)$covtable
+sv.svarmod <- function(x, h, ...) as.vgm.svarmod(x, h)$covtable
 # stop("Not defined (yet) for general variogram models")
 #--------------------------------------------------------------------
 
@@ -171,6 +173,7 @@ sv <- function(x, h, ...) UseMethod("sv")
 #' @method sv sb.iso
 #' @export
 sv.sb.iso <- function(x, h, ...) {
+# CUIDADO SI DIMENSIONES DE h GRANDE outer(h, x)
 #--------------------------------------------------------------------
     result <- with(x$par,
         drop(nu - kappasb(outer(h, x), dk) %*% z) )
@@ -178,33 +181,5 @@ sv.sb.iso <- function(x, h, ...) {
     return(result)
 }
 
-
-#--------------------------------------------------------------------
-#   covar(x, h, sill = x$sill)
-#--------------------------------------------------------------------
-#' Covariance values 
-#' 
-#' Computes covariance values given a variogram 
-#' model (or pseudo-covariances for unbounded variograms).
-#' 
-#' @param  x  variogram model (\code{\link{svarmod}} object).
-#' @param  h  vector (isotropic case) or matrix of lags values.
-#' @param  sill  variance \eqn{C(0) = \sigma^2} or pseudo-sill (unbounded variograms).
-#' @return
-#' A vector of (pseudo) covariance values \eqn{C(h_i) = \sigma^2 - \gamma(h_i)}.
-#' @seealso
-#' \code{\link{sv}}.
-#' @export
-#--------------------------------------------------------------------
-covar  <- function(x, h, sill = x$sill) {
-    if (!inherits(x, "svarmod"))
-        stop("argument 'x' must be of class (or extending) 'svarmod'.")
-    result <- sv(x, h)
-    if (is.na(sill)) {
-        warning("semivariogram model 'x' is not bounded (computing pseudo-covariances).")
-        sill = max(result)
-    }  
-    return(sill - result)
-}
 
 

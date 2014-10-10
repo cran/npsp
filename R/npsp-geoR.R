@@ -1,13 +1,19 @@
 #--------------------------------------------------------------------
 #   npsp-geoR.R (npsp package)
-#--------------------------------------------------------------------
 #   trying to KISS (keep it small and simple) geoR
-#
-# PENDENTE:
-#   - @examples
+#--------------------------------------------------------------------
+#   as.variogram()  S3 generic 
+#       as.variogram.svar.bin(x, ...)
+#       as.variogram.np.svar(x, ...)
+#   as.variomodel()  S3 generic 
+#       as.variomodel.svarmod(m, ...)
 #
 #   (c) R. Fernandez-Casal         Last revision: Apr Aug 2013
 #--------------------------------------------------------------------
+# PENDENTE:
+#   - @examples
+#--------------------------------------------------------------------
+
 
 #' @name npsp-geoR
 #' @title Interface to package "geoR"
@@ -62,7 +68,7 @@ as.variogram.svar.bin <- function(x, ...) {
 #' @method as.variogram np.svar
 #' @export
 as.variogram.np.svar <- function(x, ...) {
-# Convierte el resultado de \code{\link{svarisonp}} en un objeto
+# Convierte el resultado de \code{\link{np.svariso}} en un objeto
 #   "compatible" con la clase "variogram" de geoR.
 #
 #   PENDENTE:

@@ -40,8 +40,8 @@
   \item{degree}{degree of the local polynomial used.
   Defaults to 1 (local linear estimation).}
 
-  \item{drv}{logical; if TRUE, the matrix of estimated
-  first derivatives is returned.}
+  \item{drv}{logical; if \code{TRUE}, the matrix of
+  estimated first derivatives is returned.}
 
   \item{ncv}{integer; determines the number of cells leaved
   out in each dimension. Defaults to 0 (the full data is
@@ -94,12 +94,7 @@ den <- np.den(bin, h = hden$h)
 ## Equivalent to:
 ## den <- np.den(earthquakes[, c("lon", "lat")], h = hden$h, nbin = c(30,30))
 
-coorvs <- coordvalues(bin)
-ns <- names(coorvs)
-image( coorvs[[1]], coorvs[[2]], log(den$est), main = 'Estimated log(density)',
-            xlab = ns[1], ylab = ns[2])
-contour(coorvs[[1]], coorvs[[2]], log(den$est), add = TRUE)
-with(earthquakes, points(lon, lat, pch = 20))
+plot(den, main = 'Estimated log(density)')
 }
 \references{
   Wand, M.P. and Jones, M.C. (1995) \emph{Kernel

@@ -5,54 +5,47 @@
 #   locpol.bin  S3 class and methods
 #   locpol()    S3 generic
 #
-#   (c) R. Fernandez-Casal         Last revision: Oct 2013
+#   (c) R. Fernandez-Casal         Last revision: Mar 2014
 #--------------------------------------------------------------------
 library(npsp)
-library(fields)                               # required for drape.plot()
 
 #--------------------------------------------------------------------
-# 2D data example (regularly spaced)
+# Regularly spaced 2D data
 #--------------------------------------------------------------------
+nx <- c(40, 40)   # ndata = prod(nx)
+x1 <- seq(-1, 1, length.out = nx[1])
+x2 <- seq(-1, 1, length.out = nx[2])
+trend <- outer(x1, x2, function(x,y) x^2 - y^2)
+spersp( x1, x2, trend, main = 'Trend', zlab = 'y')
+
 set.seed(1)
-nx <- c(40, 40)                               # ndata =  prod(nx)
-x1 <- seq(-1, 1, length.out=nx[1])
-x2 <- seq(-1, 1, length.out=nx[2])
-x <- as.matrix(expand.grid(x1 = x1, x2 = x2)) # regularly spaced two-dimensional grid
-
-f2d <- function(x) x[1]^2 - x[2]^2
-y <- apply(x, 1, f2d) + rnorm(prod(nx), 0, 0.1)
-## Equivalent to: f2d <- function(x,y) x^2 - y^2 ; y <- outer(x1, x2, f2d) + rnorm(prod(nx), 0, 0.1)
-
-drape.plot(x1, x2, matrix(y,nrow=nx[1]), main = 'Data values', xlab = 'x1', ylab = 'x2', zlab = 'y')
+y <- trend + rnorm(prod(nx), 0, 0.1)
+x <- as.matrix(expand.grid(x1 = x1, x2 = x2)) # two-dimensional grid
+spersp( x1, x2, y, main = 'Data')
 
 #  # Binning
 #  bin <- binning(x, y)
-#  dim(bin)
 #  str(bin)
-#  coords(bin)
-#  
-#  coorvs <- coordvalues(bin)
-#  ns <- names(coorvs)
-#  drape.plot( coorvs[[1]], coorvs[[2]], bin$biny, main = 'Binning surface',
-#              xlab = ns[1], ylab = ns[2], zlab = 'response means')
+#  dim(bin)
+#  dimnames(bin)
+#  str(coords(bin))
+#  str(coordvalues(bin))
+#  simage(bin, main = 'Binning surface')
 
 
 # Local polynomial kernel regression 
-lp <- locpol(x, y, h = diag(0.3, ncol=2, nrow=2))
+lp <- locpol(x, y, h = diag(c(0.3, 0.3)))
 str(lp)
 dim(lp)
+dimnames(lp)
 str(coords(lp))
+str(coordvalues(lp))
 
-coorvs <- coordvalues(lp)
-ns <- names(coorvs)                           # dimnames(lp$grid)
-drape.plot( coorvs[[1]], coorvs[[2]], lp$est, main = 'locpol surface', 
-            xlab = ns[1], ylab = ns[2], zlab = 'trend estimates')
-
+spersp(lp, main = 'locpol surface', zlab = 'y')
 
 # lopol from binned data
-lp2 <- locpol(lp, h = diag(0.1, ncol=2, nrow=2))  # avoids binning
-drape.plot( coorvs[[1]], coorvs[[2]], lp2$est, main = 'locpol surface (h=0.1)', 
-            xlab = ns[1], ylab = ns[2], zlab = 'trend estimates')
+lp2 <- locpol(lp, h = diag(c(0.1, 0.1)))  # avoids binning
+spersp(lp2, main = 'locpol surface (h=0.1)', zlab = 'y')
 
 
 #--------------------------------------------------------------------
@@ -75,7 +68,7 @@ str(lp)
 
 # cuadratic fit + derivatives
 
-lp <- locpol(x, y, h = 0.2, nbin = 100, drv = TRUE, hat.bin = FALSE)
+lp <- locpol(x, y, h = 0.3, nbin = 100, drv = TRUE)
 lines(coords(lp), lp$est, lwd = 2, col = 2)
 
 plot(coords(lp), lp$deriv, type = "l", main = "Estimated first derivative")

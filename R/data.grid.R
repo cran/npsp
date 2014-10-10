@@ -12,7 +12,8 @@
 #   - exemplos
 #   - as.data.grid()
 #   - as.data.frame.data.grid()
-#   - ndim() ?
+#       !sapply(data.grid, is.list) & (sapply(data.grid, length) == prod(dim(data.grid)))
+#       coords = TRUE, ns <- names(coords) if(any(ns %in% names) ns <- paste("coord", ns, sep=".")
 #
 #   (c) R. Fernandez-Casal         Last revision: Aug 2012
 #--------------------------------------------------------------------

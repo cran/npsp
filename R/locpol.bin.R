@@ -2,11 +2,15 @@
 #   locpol.bin.R (npsp package)
 #--------------------------------------------------------------------
 #   locpol.bin  S3 class and methods
-#   locpol()    S3 generic
-#       locpol.default
-#       locpol.bin.data
-#   locpolhcv  
+#       locpol.default(x, y, h, nbin, degree, drv,  hat.bin, ncv, set.NA, ...)
+#       locpol.bin.data(x, h, degree, drv, hat.bin, ncv, ...) 
+#       locpol.svar.bin(x, h, degree, drv, hat.bin, ncv, ...) 
+#       locpol.bin.den(x, h, degree, drv, ncv, ...) 
+#   locpolhcv(x, y, nbin, objective, degree, drv, ncv, cov, ...)  
 #
+#   (c) R. Fernandez-Casal
+#   Creation date: Aug 2012     Last revision: Aug 2013
+#--------------------------------------------------------------------
 # PENDENTE:
 #   - is.locpol.bin
 #   - update.locpol.bin
@@ -14,10 +18,8 @@
 #   - revisar h, opción multiplo espaciado/dimensión rejilla units.h=, h(i,i) < 0 ?)
 #   - DUP = FALSE en FORTRAN  (o .C y pasar interfaces a C?)
 #   - opción de ncv vector
-#
-#   (c) R. Fernandez-Casal
-#   Creation date: Aug 2012     Last revision: Aug 2013
 #--------------------------------------------------------------------
+
 
 #--------------------------------------------------------------------
 # locpol(x, ...)
@@ -46,8 +48,8 @@
 #' \item{deriv}{(if requested) matrix of first derivatives.} 
 # \item{deriv}{(\eqn{length(y) \times ndim}) matrix of first derivatives.} 
 #' @seealso \code{\link{binning}}, \code{\link{data.grid}}, 
-#' \code{\link{svarisonp}}, \code{\link{svar.bin}},
-#' \code{\link{np.den}}, \code{\link{bin.den}}.
+#' \code{\link{np.svariso}}, \code{\link{svar.bin}},
+#' \code{\link{np.den}}, \code{\link{bin.den}}, \code{\link{hcv.data}}.
 #' @export
 locpol <- function(x, ...) UseMethod("locpol")
 # S3 generic function locpol
@@ -64,8 +66,8 @@ locpol <- function(x, ...) UseMethod("locpol")
 #' @param  h (full) bandwidth matrix (controls the degree of smoothing). 
 #' @param  nbin vector with the number of bins on each dimension.
 #' @param  degree degree of the local polynomial used. Defaults to 1 (local linear estimation).
-#' @param  drv logical; if TRUE, the matrix of estimated first derivatives is returned.
-#' @param  hat.bin logical; if TRUE, the hat matrix of the binned data is returned.
+#' @param  drv logical; if \code{TRUE}, the matrix of estimated first derivatives is returned.
+#' @param  hat.bin logical; if \code{TRUE}, the hat matrix of the binned data is returned.
 #' @param  ncv integer; determines the number of cells leaved out in each dimension.
 #' Defaults to 0 (the full data is used) and it is not normally changed by the user
 #' in this setting. See "Details" below.
@@ -73,8 +75,8 @@ locpol <- function(x, ...) UseMethod("locpol")
 #' @details Standard generic function with a default method (interface to the 
 #' fortran routine \code{lp_raw}), in which argument \code{x} 
 #' is a vector or matrix of covariates (e.g. spatial coordinates).
-#' 
-#' If parameter \code{nbim} is not specified is set to \code{rep(25, ncol(x))}. 
+#'
+#' If parameter \code{nbin} is not specified is set to \code{rep(25, ncol(x))}. 
 #'
 #' A multiplicative triweight kernel is used to compute the weights.
 #' 
@@ -86,7 +88,7 @@ locpol <- function(x, ...) UseMethod("locpol")
 #' 
 #' Setting \code{set.NA = TRUE} (equivalent to \code{biny[binw == 0] <- NA}) 
 #' may be useful for plotting the binned averages \code{$biny}
-#' (the hat matrix should be handle with care).
+#' (the hat matrix should be handled with care).
 #' @references
 #' Chu, C.K. and Marron, J.S. (1991) Comparison of Two Bandwidth Selectors
 #'   with Dependent Errors. \emph{The Annals of Statistics}, \bold{19}, 1906-1918.
@@ -94,18 +96,19 @@ locpol <- function(x, ...) UseMethod("locpol")
 #' Rupert D. and Wand M.P. (1994) Multivariate locally weighted least squares regression.
 #'   \emph{The Annals of Statistics}, \bold{22}, 1346-1370.
 #' @examples 
-#' bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(30,30))
-#' hcv <- h.cv(bin)
-#' lp <- locpol(bin, h = hcv$h)
-#' ## Equivalent to:
-#' ## lp <- locpolhcv(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(30,30))
+#' lp <- locpol(earthquakes[, c("lon", "lat")], earthquakes$mag, h = diag(2, 2), nbin = c(41,41))
+#' simage(lp, main = "Smoothed magnitude")
+#' contour(lp, add = TRUE)
 #' 
-#' coorvs <- coordvalues(lp)
-#' ns <- names(coorvs)                           # dimnames(lp$grid)
-#' image( coorvs[[1]], coorvs[[2]], lp$est, main = 'Smoothed magnitude',
-#'             xlab = ns[1], ylab = ns[2])
-#' contour(coorvs[[1]], coorvs[[2]], log(lp$est), add = TRUE)
-#' with(earthquakes, points(lon, lat, pch = 20))
+#' bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(41,41))
+#' lp2 <- locpol(bin, h = diag(2, 2))
+#' all.equal(lp, lp2)
+#' 
+#' ## Alternatively:
+#' ## lp <- locpolhcv(earthquakes[, c("lon", "lat")], earthquakes$mag, ncv = 4)
+#' 
+#' den <- locpol(as.bin.den(bin), h = diag(1, 2))
+#' plot(den, log = FALSE, main = 'Estimated density')
 #' @export
 locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(drv), 
           drv = FALSE, hat.bin = FALSE, ncv = 0, set.NA = FALSE, ...) {    
@@ -119,6 +122,7 @@ locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(
 #     (defecto en fortran con valor negativo h(1,1)??)
 #   - eliminar (*) de fortran, fortran 2003
 #--------------------------------------------------------------------
+    y <- as.numeric(y)
     ny <- length(y)                              # number of data
     x <- as.matrix(x)
     if ( !identical(ny, nrow(x)) )
@@ -275,8 +279,8 @@ locpol.bin.data <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FAL
 #' (locpol semivar + bin semivar + grid par.).
 #' @export
 locpol.svar.bin <- function(x, h = NULL, degree = 1, drv = FALSE, 
-                                        hat.bin = FALSE, ncv = 0, ...){
-# @seealso \code{\link{svarisonp}}, \code{\link{svar.bin}}.
+                                        hat.bin = TRUE, ncv = 0, ...){
+# @seealso \code{\link{np.svariso}}, \code{\link{svar.bin}}.
 #--------------------------------------------------------------------
     result <- locpol.bin.data(x, h = h, degree = degree, drv = drv, 
                   hat.bin = hat.bin, ncv = ncv, ...)
@@ -366,7 +370,7 @@ locpol.bin.den <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALS
 #' @inheritParams hcv.data
 #' @details  \code{locpolhcv} calls \code{\link{hcv.data}} to obtain an "optimal" 
 #' bandwith (additional arguments \code{...} are passed to this function). 
-#' Argument \code{ncv} is only used here at bandwith
+#' Argument \code{ncv} is only used here at the bandwith
 #' selection stage (estimation is done with all the data).
 #' @export
 locpolhcv <- function(x, y, nbin = NULL, objective = c("CV", "GCV", "MASE"),  
@@ -375,7 +379,7 @@ locpolhcv <- function(x, y, nbin = NULL, objective = c("CV", "GCV", "MASE"),
                       ncv = ifelse(objective == "GCV", 0, 1), cov = NULL, ...) { 
 #--------------------------------------------------------------------
     objective <- match.arg(objective)
-    bin <- binning(x, y, nbin = nbin)
+    bin <- binning(x, y, nbin = nbin, set.NA = set.NA)
     if(is.null(cov))
         hopt <- h.cv.bin.data(bin, objective = objective, degree = degree, ncv = ncv, 
                   cov.bin = NULL, ...)$h
@@ -383,7 +387,7 @@ locpolhcv <- function(x, y, nbin = NULL, objective = c("CV", "GCV", "MASE"),
         hopt <- hcv.data(bin, objective = objective, degree = degree, ncv = ncv, 
                   cov = cov, ...)$h       
     return(locpol(bin, h = hopt, degree = degree, drv = drv, ncv = 0, 
-        hat.bin = hat.bin, set.NA = set.NA))
+        hat.bin = hat.bin))
 }                  
 
 

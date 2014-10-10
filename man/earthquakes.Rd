@@ -27,7 +27,7 @@
 \examples{
 str(earthquakes)
 summary(earthquakes)
-with(earthquakes, plot(lon, lat))
+with(earthquakes, spoints(lon, lat, mag, main = "Earthquake data"))
 }
 \references{
   Francisco-Fernandez M., Quintela-del-Rio A. and

@@ -1,4 +1,16 @@
 #--------------------------------------------------------------------
+#   interp.R (npsp package)
+#--------------------------------------------------------------------
+#   interp()    S3 generic
+#       interp.grid.par(object, data, newx, ...)
+#       interp.data.grid(object, data.ind, newx, ...)
+#       predict.locpol.bin(object, newx, hat.data, ...)
+#--------------------------------------------------------------------
+
+
+#--------------------------------------------------------------------
+# interp(object, ...)
+#--------------------------------------------------------------------
 #' Fast linear interpolation of a regular grid
 #'
 #' Computes a linear interpolation of multidimensional regularly gridded data.
@@ -49,7 +61,7 @@ interp.grid.par <- function(object, data, newx, ...) {
     nd <- object$nd  
     n <- object$n
     nt <- prod(n)
-    if(any(is.na(data))) 
+    if(any(is.na(data)))      #  anyNA() R >= 3.1.0
         stop("'data' has missing values")     
     if(length(data) != nt) 
         stop("'length(data)' does not match the dimension of the grid 'object'")     
@@ -87,7 +99,7 @@ interp.data.grid <- function(object, data.ind = 1, newx, ...) {
 #--------------------------------------------------------------------
 #' @rdname interp  
 #' @method predict locpol.bin 
-#' @param hat.data logical; if TRUE (and possible), the hat matrix corresponding 
+#' @param hat.data logical; if \code{TRUE} (and possible), the hat matrix corresponding 
 #' to the (original) data is returned. 
 #' @return If \code{newx == NULL}, \code{predict.locpol.bin} returns the estimates 
 #' (and optionally the hat matrix) corresponding to the data
@@ -128,3 +140,18 @@ predict.locpol.bin <- function(object, newx = NULL, hat.data = FALSE, ...) {
     return(if(hat.data) list(y.est = ret$yest, y.hat = matrix(ret$yhat, nrow = ny)) else ret$yest)
 #--------------------------------------------------------------------
 } # predict.locpol.bin
+
+
+
+
+#--------------------------------------------------------------------
+#' @rdname npsp-internals
+#' @method residuals locpol.bin
+#' @keywords internal
+#' @export
+residuals.locpol.bin <- function(object, ...) {
+#--------------------------------------------------------------------
+    if (!inherits(object, "locpol.bin"))
+      stop("function only works for objects of class (or extending) 'locpol.bin'")
+    return(object$data$y - predict(object))
+}#--------------------------------------------------------------------

@@ -16,8 +16,8 @@
   coordinates).  Columns correspond with dimensions and
   rows with observations.}
 
-  \item{nbin}{vector with the number of bins
-  (\eqn{intervals = nbin + 1}) on each dimension.}
+  \item{nbin}{vector with the number of bins on each
+  dimension.}
 
   \item{object}{(gridded data) used to select a method.}
 
@@ -43,7 +43,7 @@
   \code{rep(25, ncol(x))}.
 }
 \seealso{
-  \code{\link{data.grid}}, \code{\link{bin.data}},
-  \code{\link{locpol}}.
+  \code{\link{np.den}}, \code{\link{bin.data}},
+  \code{\link{bin.data}}, \code{\link{locpol}}.
 }
 

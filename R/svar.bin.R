@@ -2,18 +2,15 @@
 #   svar.bin.R (npsp package)
 #--------------------------------------------------------------------
 #   svar.bin        S3 class and methods
-#   svariso<- svar.bin.default(x, y, maxlag = NULL, nlags = NULL, 
-#                 minlag = maxlag/nlags, estimator = c("classical", "modulus"))   
-#   locpol.svar.bin(x)
-#   as.variogram()  S3 generic
-#       as.variogram.svar.bin(x)
-#
-# PENDENTE:
-#   - S3 generic ?
-#   - parametro hat.bin = TRUE/FALSE para obtención matriz hat
+#       svar.bin.default(x, y, maxlag, nlags, minlag, estimator, ...)   
+#   svariso(x, y, maxlag, nlags, minlag, estimator, ...)   
 #
 #   (c) R. Fernandez-Casal         Last revision: Aug 2012
 #--------------------------------------------------------------------
+# PENDENTE:
+#   - S3 generic ?
+#--------------------------------------------------------------------
+
 
 #--------------------------------------------------------------------
 # svar.bin(x, ...)
@@ -24,7 +21,9 @@
 #' linearly binned semivariances.
 #'
 #' @aliases svar.bin-class
-#' @param  x 	a (data) object used to select a method.
+#' @param  x 	object used to select a method. Usually a matrix with the 
+#' coordinates of the data locations (columns correspond with dimensions and 
+#' rows with data).
 #' @param  ... 	further arguments passed to or from other methods.
 #' @details  Currently, only isotropic semivariogram estimation is supported.
 #' 
@@ -45,11 +44,12 @@
 #'    \item{\code{type} character, type of estimation (e.g. "isotropic").}
 #'    \item{\code{estimator} character, estimator name (e.g. "classical").}
 #' }}
-#' @seealso \code{\link{svarisonp}}, \code{\link{np.svar}}, 
+#' @seealso \code{\link{np.svariso}}, \code{\link{np.svar}}, 
 #' \code{\link{data.grid}}, \code{\link{binning}}, \code{\link{locpol}}.
 #' @export
 svar.bin <- function(x, ...) UseMethod("svar.bin")
 # S3 generic function svar.bin
+
 
 #--------------------------------------------------------------------
 #' @rdname svar.bin
@@ -66,10 +66,7 @@ svar.bin.default <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/
 #   Devuelve la rejilla binning (lineal) para la estimación np de un semivariograma isotrópico
 #   Se puede emplear para estimación clásica/robusta
 #--------------------------------------------------------------------
-# svariso <- function(x, ...) UseMethod("svariso")
-# svariso.default <- function(x, y, maxlag, nlags = NULL, minlag = maxlag/nlags, 
-#                    estimator = c("classical", "modulus"), ...) {    
-#--------------------------------------------------------------------
+    y <- as.numeric(y)
     ny <- length(y)                       # number of data
     x <- as.matrix(x)
     if ( !identical(ny, nrow(x)) )
@@ -114,7 +111,10 @@ svar.bin.default <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/
 
 
 
+#--------------------------------------------------------------------
 #' @rdname svar.bin
 #' @export
 svariso <- svar.bin.default
+#--------------------------------------------------------------------
+
 

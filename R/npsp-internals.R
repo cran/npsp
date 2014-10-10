@@ -1,5 +1,22 @@
+#--------------------------------------------------------------------
+#   npsp-internals.R (npsp package)
+#--------------------------------------------------------------------
+#   grid.par  S3 methods
+#       print.grid.par(x, ...)
+#       dim.grid.par(x)
+#       dimnames.grid.par(x)
+#       as.data.frame.grid.par(x, row.names, optional, ...)
+#   data.grid S3 methods
+#       dim.data.grid(x)
+#       dimnames.data.grid(x)      
+#   is.data.grid(x)       
+#
+#   (c) R. Fernandez-Casal         Last revision: Aug 2013
+#--------------------------------------------------------------------
 
-################################ grid.par ###################################
+
+
+#--------------------------------------------# grid.par #--------------------------------------------####
 
 
 #--------------------------------------------------------------------
@@ -52,7 +69,7 @@ as.data.frame.grid.par <- function(x, row.names = dimnames(x), optional = FALSE,
 }
 
 
-################################ data.grid ###################################
+#--------------------------------------------# data.grid #--------------------------------------------####
 
 
 
@@ -63,13 +80,6 @@ as.data.frame.grid.par <- function(x, row.names = dimnames(x), optional = FALSE,
 is.data.grid <- function(x) inherits(x, "data.grid")
 #--------------------------------------------------------------------
 
-#--------------------------------------------------------------------
-#' @rdname npsp-internals
-#' @method dimnames data.grid
-#' @keywords internal
-#' @export
-dimnames.data.grid <- function(x) dimnames.grid.par(x$grid)
-#--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
 #' @rdname npsp-internals
@@ -80,7 +90,14 @@ dim.data.grid <- function(x) dim.grid.par(x$grid)
 #--------------------------------------------------------------------
 
 
+#--------------------------------------------------------------------
+#' @rdname npsp-internals
+#' @method dimnames data.grid
+#' @keywords internal
+#' @export
+dimnames.data.grid <- function(x) dimnames.grid.par(x$grid)
+#--------------------------------------------------------------------
 
 
-################################ svar. ###################################
+
 

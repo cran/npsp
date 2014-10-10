@@ -7,15 +7,14 @@
 #   coords      S3 generic
 #   coordvalues S3 generic
 #
-#   (c) R. Fernandez-Casal         Last revision: Aug 2012
+#   (c) R. Fernandez-Casal         Last revision: Mar 2014
 #--------------------------------------------------------------------
 library(npsp)
-library(fields)                           # required for drape.plot()
 
 # Data
 n <- c(15,15)
-x1 <- seq(-1,1, length.out=n[1])
-x2 <- seq(-1,1, length.out=n[2])
+x1 <- seq(-1,1, length.out = n[1])
+x2 <- seq(-1,1, length.out = n[2])
 
 f2d <- function(x,y) x^2 - y^2 
 y <- outer(x1, x2, f2d)
@@ -40,7 +39,6 @@ dimnames(datag)
 str(datag)
 str(coords(datag))  #coords(datag)
 
-coorvs <- coordvalues(datag)
-drape.plot( coorvs[[1]], coorvs[[2]], datag$y, 
-            main = 'f(x^2 - y^2)', xlab = 'x', ylab = 'y')
+spersp(datag, main = 'f(x,y) = x^2 - y^2', xlab = 'x', ylab = 'y')
+
 

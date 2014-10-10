@@ -17,7 +17,9 @@
     estimator = c("classical", "modulus"), ...)
 }
 \arguments{
-  \item{x}{a (data) object used to select a method.}
+  \item{x}{object used to select a method. Usually a matrix
+  with the coordinates of the data locations (columns
+  correspond with dimensions and rows with data).}
 
   \item{...}{further arguments passed to or from other
   methods.}
@@ -63,7 +65,7 @@
   \code{101}.
 }
 \seealso{
-  \code{\link{svarisonp}}, \code{\link{np.svar}},
+  \code{\link{np.svariso}}, \code{\link{np.svar}},
   \code{\link{data.grid}}, \code{\link{binning}},
   \code{\link{locpol}}.
 }

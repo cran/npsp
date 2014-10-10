@@ -20,7 +20,7 @@
     hat.bin = FALSE, ncv = 0, ...)
 
   \method{locpol}{svar.bin} (x, h = NULL, degree = 1,
-    drv = FALSE, hat.bin = FALSE, ncv = 0, ...)
+    drv = FALSE, hat.bin = TRUE, ncv = 0, ...)
 
   \method{locpol}{bin.den} (x, h = NULL,
     degree = 1 + as.numeric(drv), drv = FALSE, ncv = 0,
@@ -50,11 +50,11 @@
   \item{degree}{degree of the local polynomial used.
   Defaults to 1 (local linear estimation).}
 
-  \item{drv}{logical; if TRUE, the matrix of estimated
-  first derivatives is returned.}
+  \item{drv}{logical; if \code{TRUE}, the matrix of
+  estimated first derivatives is returned.}
 
-  \item{hat.bin}{logical; if TRUE, the hat matrix of the
-  binned data is returned.}
+  \item{hat.bin}{logical; if \code{TRUE}, the hat matrix of
+  the binned data is returned.}
 
   \item{ncv}{integer; determines the number of cells leaved
   out in each dimension. Defaults to 0 (the full data is
@@ -105,7 +105,7 @@
   which argument \code{x} is a vector or matrix of
   covariates (e.g. spatial coordinates).
 
-  If parameter \code{nbim} is not specified is set to
+  If parameter \code{nbin} is not specified is set to
   \code{rep(25, ncol(x))}.
 
   A multiplicative triweight kernel is used to compute the
@@ -122,27 +122,28 @@
   Setting \code{set.NA = TRUE} (equivalent to
   \code{biny[binw == 0] <- NA}) may be useful for plotting
   the binned averages \code{$biny} (the hat matrix should
-  be handle with care).
+  be handled with care).
 
   \code{locpolhcv} calls \code{\link{hcv.data}} to obtain
   an "optimal" bandwith (additional arguments \code{...}
   are passed to this function). Argument \code{ncv} is only
-  used here at bandwith selection stage (estimation is done
-  with all the data).
+  used here at the bandwith selection stage (estimation is
+  done with all the data).
 }
 \examples{
-bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(30,30))
-hcv <- h.cv(bin)
-lp <- locpol(bin, h = hcv$h)
-## Equivalent to:
-## lp <- locpolhcv(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(30,30))
+lp <- locpol(earthquakes[, c("lon", "lat")], earthquakes$mag, h = diag(2, 2), nbin = c(41,41))
+simage(lp, main = "Smoothed magnitude")
+contour(lp, add = TRUE)
 
-coorvs <- coordvalues(lp)
-ns <- names(coorvs)                           # dimnames(lp$grid)
-image( coorvs[[1]], coorvs[[2]], lp$est, main = 'Smoothed magnitude',
-            xlab = ns[1], ylab = ns[2])
-contour(coorvs[[1]], coorvs[[2]], log(lp$est), add = TRUE)
-with(earthquakes, points(lon, lat, pch = 20))
+bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(41,41))
+lp2 <- locpol(bin, h = diag(2, 2))
+all.equal(lp, lp2)
+
+## Alternatively:
+## lp <- locpolhcv(earthquakes[, c("lon", "lat")], earthquakes$mag, ncv = 4)
+
+den <- locpol(as.bin.den(bin), h = diag(1, 2))
+plot(den, log = FALSE, main = 'Estimated density')
 }
 \references{
   Chu, C.K. and Marron, J.S. (1991) Comparison of Two
@@ -155,7 +156,8 @@ with(earthquakes, points(lon, lat, pch = 20))
 }
 \seealso{
   \code{\link{binning}}, \code{\link{data.grid}},
-  \code{\link{svarisonp}}, \code{\link{svar.bin}},
-  \code{\link{np.den}}, \code{\link{bin.den}}.
+  \code{\link{np.svariso}}, \code{\link{svar.bin}},
+  \code{\link{np.den}}, \code{\link{bin.den}},
+  \code{\link{hcv.data}}.
 }
 

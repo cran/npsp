@@ -31,8 +31,9 @@
   \item{data.ind}{integer or character with the index or
   name of the data component.}
 
-  \item{hat.data}{logical; if TRUE (and possible), the hat
-  matrix corresponding to the (original) data is returned.}
+  \item{hat.data}{logical; if \code{TRUE} (and possible),
+  the hat matrix corresponding to the (original) data is
+  returned.}
 }
 \value{
   A list with two components: \item{x}{interpolation

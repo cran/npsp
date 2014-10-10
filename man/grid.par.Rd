@@ -33,7 +33,7 @@
   All parameters must have the same length. Only one of the
   arguments \code{max} or \code{lag} must be specified.
 
-  S3 'version' on the
+  S3 'version' of the
   \code{\link[sp]{GridTopology}}-\code{\link{class}} of the
   \pkg{sp} package.
 }

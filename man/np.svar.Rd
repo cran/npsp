@@ -4,31 +4,40 @@
 \alias{np.svar-class}
 \alias{np.svar.default}
 \alias{np.svar.svar.bin}
-\alias{svarisohcv}
-\alias{svarisonp}
+\alias{np.svariso}
+\alias{np.svariso.corr}
+\alias{np.svariso.hcv}
 \title{Local polynomial estimation of the semivariogram}
 \usage{
   np.svar(x, ...)
 
   \method{np.svar}{default} (x, y, h = NULL, maxlag = NULL,
     nlags = NULL, minlag = maxlag/nlags, degree = 1,
-    drv = FALSE, hat.bin = FALSE, ncv = 0, ...)
+    drv = FALSE, hat.bin = TRUE, ncv = 0, ...)
 
   \method{np.svar}{svar.bin} (x, h = NULL, degree = 1,
-    drv = FALSE, hat.bin = FALSE, ncv = 0, ...)
+    drv = FALSE, hat.bin = TRUE, ncv = 0, ...)
 
-  svarisonp(x, y, h = NULL, maxlag = NULL, nlags = NULL,
+  np.svariso(x, y, h = NULL, maxlag = NULL, nlags = NULL,
     minlag = maxlag/nlags, degree = 1, drv = FALSE,
-    hat.bin = FALSE, ncv = 0, ...)
+    hat.bin = TRUE, ncv = 0, ...)
 
-  svarisohcv(x, y, maxlag = NULL, nlags = NULL,
-    minlag = maxlag/nlags,
-    objective = c("CV", "GCV", "MASE"),
+  np.svariso.hcv(x, y, maxlag = NULL, nlags = NULL,
+    minlag = maxlag/nlags, degree = 1, drv = FALSE,
+    hat.bin = TRUE, objective = c("CV", "GCV", "MASE"),
     ncv = ifelse(objective == "GCV", 0, 1), cov.bin = NULL,
     ...)
+
+  np.svariso.corr(lp, x = lp$data$x, h = NULL,
+    maxlag = NULL, nlags = NULL, minlag = maxlag/nlags,
+    degree = 1, drv = FALSE, hat.bin = TRUE, tol = 0.05,
+    max.iter = 10, plot = FALSE,
+    ylim = c(0, 2 * max(svar$biny, na.rm = TRUE)))
 }
 \arguments{
-  \item{x}{a (data) object used to select a method.}
+  \item{x}{object used to select a method. Usually a matrix
+  with the coordinates of the data locations (columns
+  correspond with dimensions and rows with data).}
 
   \item{...}{further arguments passed to or from other
   methods.}
@@ -42,11 +51,27 @@
 
   \item{minlag}{minimun lag.}
 
-  \item{hat.bin}{logical; if TRUE, the hat matrix of the
-  binned semivariances is returned.}
+  \item{hat.bin}{logical; if \code{TRUE}, the hat matrix of
+  the binned semivariances is returned.}
 
   \item{cov.bin}{covariance matrix of the binned
   semivariances. Defaults to identity.}
+
+  \item{lp}{local polynomial estimate of the trend function
+  (object of class \code{\link{locpol.bin}}).}
+
+  \item{tol}{convergence tolerance. The algorithm stops if
+  the average of the relative squared diferences is less
+  than \code{tol}. Defaults to 0.04.}
+
+  \item{max.iter}{maximum number of iterations. Defaults to
+  10.}
+
+  \item{plot}{logical; if \code{TRUE}, the estimates
+  obtained at each iteration are plotted.}
+
+  \item{ylim}{y-limits of the plot (if \code{plot ==
+  TRUE}).}
 
   \item{h}{(full) bandwidth matrix (controls the degree of
   smoothing).}
@@ -54,8 +79,8 @@
   \item{degree}{degree of the local polynomial used.
   Defaults to 1 (local linear estimation).}
 
-  \item{drv}{logical; if TRUE, the matrix of estimated
-  first derivatives is returned.}
+  \item{drv}{logical; if \code{TRUE}, the matrix of
+  estimated first derivatives is returned.}
 
   \item{ncv}{integer; determines the number of cells leaved
   out in each dimension. Defaults to 0 (the full data is
@@ -95,8 +120,27 @@
   If parameter \code{nlags} is not specified is set to
   \code{101}.
 
+  The computation of the hat matrix of the binned
+  semivariances (\code{hat.bin = TRUE}) allows for the
+  computation of approximated estimation variances (e.g. in
+  \code{\link{fitsvar.sb.iso}}).
+
   A multiplicative triweight kernel is used to compute the
   weights.
+
+  \code{np.svariso.hcv} calls \code{\link{h.cv}} to obtain
+  an "optimal" bandwith (additional arguments \code{...}
+  are passed to this function). Argument \code{ncv} is only
+  used here at the bandwith selection stage (estimation is
+  done with all the data).
+
+  \code{np.svariso.corr} computes a bias-corrected
+  nonparametric semivariogram estimate using an iterative
+  algorithm similar to that described in Fernandez-Casal
+  and Francisco-Fernandez (2014). This procedure tries to
+  correct the bias due to the direct use of residuals
+  (obtained in this case from a nonparametric estimation of
+  the trend function) in semivariogram estimation.
 }
 \references{
   Fernandez Casal R., Gonzalez Manteiga W. and Febrero
@@ -109,6 +153,11 @@
   Febrero-Bande M. (2003) Local linear regression
   estimation of the variogram, \emph{Stat. Prob. Lett.},
   \bold{64}, 169-179.
+
+  Fernandez-Casal R. and Francisco-Fernandez M. (2014)
+  Nonparametric bias-corrected variogram estimation under
+  non-constant trend, \emph{Stoch. Environ. Res. Ris.
+  Assess}, \bold{28}, 1247-1259.
 }
 \seealso{
   \code{\link{svar.bin}}, \code{\link{data.grid}},

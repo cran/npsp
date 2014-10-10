@@ -1,16 +1,17 @@
 #--------------------------------------------------------------------
 #   npsp-gstat.R (npsp package)
-#--------------------------------------------------------------------
 #   trying to KISS (keep it small and simple) gstat
-#
-#   as.vgm  S3 generic
-#       as.vgm.variomodel
-#       as.vgm.svarmod
-#
-# PENDENTE:
-#   - @examples
+#--------------------------------------------------------------------
+#   as.vgm()  S3 generic
+#       as.vgm.variomodel(x, ...)
+#       as.vgm.svarmod(x, ...)
+#       as.vgm.sb.iso(x, h, sill, ...)
+#   vgm.tab.svarmod(x, h, sill, ...)
 #
 #   (c) R. Fernandez-Casal         Last revision: Apr Aug 2013
+#--------------------------------------------------------------------
+# PENDENTE:
+#   - @examples
 #--------------------------------------------------------------------
 
 

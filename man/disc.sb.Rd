@@ -19,17 +19,17 @@
 }
 \details{
   If \code{dk >= 1}, the nodes are computed as: \deqn{x_i =
-  q_i/rmax; i = 1,\ldots, n,} where \eqn{q_i} are the first
-  \eqn{n} roots of \eqn{J_{(d-2)/2}}, \eqn{J_p} is the
-  Bessel function of order \eqn{p} and \eqn{rmax} is the
-  maximum lag considered. The computation of the zeros of
-  the Bessel function is done using the efficient algorithm
-  developed by Ball (2000).
+  q_i/rmax; i = 1,\ldots, nx,} where \eqn{q_i} are the
+  first \eqn{n} roots of \eqn{J_{(d-2)/2}}, \eqn{J_p} is
+  the Bessel function of order \eqn{p} and \eqn{rmax} is
+  the maximum lag considered. The computation of the zeros
+  of the Bessel function is done using the efficient
+  algorithm developed by Ball (2000).
 
   If \code{dk == 0} (corresponding to a model valid in any
   spatial dimension), the nodes are computed so the
   gaussian variogram models involved have practical ranges:
-  \deqn{r_i = ( 1 + 1.2(i-1))rmax/n; i = 1,\ldots, n.}
+  \deqn{r_i = ( 1 + (i-1))rmax/nx; i = 1,\ldots, nx.}
 }
 \examples{
 disc.sb( 12, 1, 1.0)

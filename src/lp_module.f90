@@ -13,7 +13,7 @@
 !       predict_locpol    Estimación y matriz hat en observaciones ("predict.locpol.bin")
 !
 !   Autor: (c) Ruben Fernandez-Casal    
-!   Fecha revision: Abr 2007, Oct 2012, Jun 2013, Oct 2013
+!   Fecha revision: Abr 2007, Oct 2012, Jun 2013, Oct 2013, Mar 2014
 !-----------------------------------------------------------------------
 
 !   --------------------------------------------------------------------
@@ -259,10 +259,14 @@
 !               (p.e. CV con dependencia)
 !       nrl0 = numero de nodos binning (con peso no nulo) sin datos suficientes
 !
-!   PENDENTE:
+!   PENDIENTE:
+!       - Eliminar calculo de deth en DSYTRFI?
 !       - Incluir Epsilon como parametro ?
-!                tmp = DSQRT( bin%w(i) * Bk(j) ) ! bin%w = Peso/frecuencia nodo binning
-!                IF (tmp < Epsilon) CYCLE
+!             tmp = bin%w(i) * Bk(j)  ! bin%w = Peso/frecuencia nodo binning
+!             IF (tmp < Epsilon**2.0d0) CYCLE
+!       - Incluir Tolerance para evitar extrapolaciones alejadas de los datos?
+!             Calcular WSum en el bucle
+!             IF (deth * WSum < Tolerance) CYCLE  
 !       - Devolver rejilla binning (grid_bin) + rejilla datos
 !
 !   IMPORTANTE:
@@ -270,7 +274,8 @@
 !         (o 0's para estimación densidad)
 !       - Se supone que deriv contiene NA's en la entrada
 !
-!   Autor: (c) Ruben Fernandez-Casal    Ultima revision: Mar 2008, Sep 2012, Jun 2013
+!   Autor: (c) Ruben Fernandez-Casal
+!   Fecha revision: Mar 2008, Sep 2012, Jun 2013, Mar 2014
 !   --------------------------------------------------------------------
     use grid_module
     use linreg_module
@@ -283,14 +288,14 @@
     real*8  h(bin%ndim, bin%ndim), lpe(bin%ngrid), RMNP, RSSNP,                     &
             hatlp(ldhatlp, bin%ngrid), deriv(ldderiv, bin%ndim) 
     real*8, external :: FNucMD
-    LOGICAL GetE, GetHAT, GetDERIV
+    logical GetE, GetHAT, GetDERIV
 !   Variables locales
     real*8, PARAMETER :: Epsilon = 1.0D-6
     integer indb(bin%ndim), ii0(bin%ndim), ii(bin%ndim), iinc(bin%ndim), nindb,     &
    &        indy(bin%ngrid), i, i0, i1, j
     real*8  IH(bin%ndim, bin%ndim), deth, d(bin%ndim), t(bin%ndim), Bk(bin%ngrid),  &
    &        VHAT(bin%ngrid), WSum, tmp
-    LOGICAL LOUT, LDELCV, LError
+    logical LOUT, LDELCV, LError
     integer, ALLOCATABLE :: iindb(:,:)
 !   --------------------------------------------------------------------
         nd = bin%ndim
@@ -320,7 +325,8 @@
             END DO           
 !           CALL DMURRV(nd, nd, IH, nd, nd, d, 1, nd, t)
             t = matmul(IH, d)
-            tmp = FNucMD(t, nd)/deth
+!           tmp = FNucMD(t, nd)/deth  ! problems with large values
+            tmp = FNucMD(t, nd)
             Bk(i) = tmp
 !           Calcular rango datos estimación
             IF (tmp > Epsilon) THEN
@@ -331,16 +337,24 @@
 !           CALL bin%incii()    ! Incrementa el indice (uni y multi dimensional)
             CALL incii(bin)
         END DO  !   DO i = 1, ngrid
-!       Preparar rejilla MD con posiciones relativas
         indb = indb - 1
-!       PENDENTE: NON DATOS EN DIMENSIÓN I
-        IF ( MAXVAL(indb - NDelCV) < 0 )                                          &
-   &            CALL error(2, 'lp: there is no data in the neighborhoods.')
-!       PENDENTE: indb(J)-NDelCV(J) < 0 --> WARNING
         nindb = 1
         DO j = 1, nd
           nindb = nindb*(2*indb(j)+1)
         END DO
+        NINDRL = 1 + nd * degree
+!       Verificar problemas vecindarios 
+!           PENDENTE: NON DATOS EN DIMENSIÓN I
+!           PENDENTE: indb(J)-NDelCV(J) < 0 --> WARNING
+!           PENDENTE: opcion salir sin hacer nada / warning / stop ?
+        IF ( MAXVAL(indb - NDelCV) < 0 )   & 
+!               Los vecindarios estan vacios
+   &            CALL error(2, 'lp: there is no data in the neighborhoods.')
+        IF (nindb < NINDRL)    &
+!               No hay suficientes datos para el ajuste propuesto
+   &            CALL error(3, 'lp: there is not enough data in neighborhoods.')
+!       Preparar rejilla MD con posiciones relativas: iindb
+!           iindb indice multidimensional rejilla -indb:indb        
         ALLOCATE (iindb(nd,nindb), STAT = i)
         IF (i /= 0) CALL error(-1, 'lp: ALLOCATE (iindb(nd,nindb)).')
         ii = -indb
@@ -353,9 +367,6 @@
           END DO
         END DO
 !       Asignar memoria para ajuste lineal
-        NINDRL = 1 + nd * degree
-        IF (nindb < NINDRL)                                                       &
-   &            CALL error(3, 'lp: Not enough data in neighborhoods.')
         CALL ModRegLinInit(nindb, NINDRL)
 !       Recorrer rejilla binning
         bin%ii = 1
@@ -383,11 +394,12 @@
                 i = ind(bin, ii)
 !               j = bin%ind(iinc)               ! iiBM(iinc)
                 j = ind(bin, iinc)
-                tmp = DSQRT( bin%w(i) * Bk(j) ) ! bin%w = Peso/frecuencia nodo binning
-                IF (tmp < Epsilon) CYCLE
+                tmp = bin%w(i) * Bk(j)          ! bin%w = Peso/frecuencia nodo binning
+!               IF (tmp < Epsilon) CYCLE
+                IF (tmp < Epsilon**2.0d0) CYCLE
                 NRL = NRL+1
-                XRL(NRL,1) = tmp
                 IF (degree > 0) THEN
+                    tmp = DSQRT(tmp) 
                     DO j = 1, nd
                         XRL(NRL, j + 1) = iindb(j, i1) * bin%lag(j) * tmp
                     END DO
@@ -397,6 +409,7 @@
                         END DO
                     END IF
                 END IF    
+                XRL(NRL,1) = tmp
                 YRL(NRL) = bin%y(i) * tmp
                 IF (GetHAT) indy(NRL) = i
             END DO  ! DO i1 = 1, nindb
@@ -405,11 +418,11 @@
                 IF (bin%w(i0) > 0.0d0) THEN
                     BRL(1) = bin%med    ! Media global para medidas de error                    
                     nrl0 = nrl0 + 1
-                    IF (GetHAT) hatlp(i0, 1:ngrid) = 1/ngrid
+                    IF (GetHAT) hatlp(i0, 1:ngrid) = 1/ngrid  ! Aprox. (considerar bin%w?)
                 END IF    
             ELSE
                 IF (degree == 0) THEN
-!                   Media ponderada
+!                   Media ponderada (pesos bin%w(i) * Bk(j))
                     WSum = SUM(XRL(1:NRL,1))
                     BRL(1) = SUM(YRL(1:NRL))/WSum
                     IF (GetE) lpe(i0) = BRL(1)
@@ -463,7 +476,9 @@
     subroutine predict_locpol_bin(g, lpe, gethat, hatlp, x, lpy, hatlpy)
 !       Devuelve las estimaciones y matriz hat correspondiente a las observaciones
 !       NOTA: x debería ser el empleado para construir la rejilla binning type(grid_bin) :: g
-!     PENDENTE: ALTERNATIVA PARA SPARSE MATRIX PBIN
+!     PENDIENTE: 
+!         - Warning si extrapolación
+!         - ALTERNATIVA PARA SPARSE MATRIX PBIN
 !   ----------------------------------------------------------------
     use grid_module
     implicit none
@@ -508,6 +523,9 @@
         do i = 1, ny
             do j = 1, nd
                 iib(j) = 1 + int((x(j, i) - g%min(j)) / g%lag(j))
+!               Extrapolación:
+                if (iib(j) < 1) iib(j) = 1
+                if (iib(j) >= g%n(j)) iib(j) = g%n(j) - 1
 !               calculo de los pesos
                 w(2, j) = (x(j, i) - g%min(j) - (iib(j)-1)*g%lag(j)) / g%lag(j)
                 w(1, j) = 1.0d0 - w(2, j)

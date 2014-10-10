@@ -3,19 +3,21 @@
 \title{Fit an isotropic Shapiro-Botha variogram model}
 \usage{
   fitsvar.sb.iso(esv, dk = ncol(esv$data$x), nx = NULL,
-    rmax = esv$grid$max, min.contrib = 15,
-    method = c("cressie", "equal", "npairs", "gstat"),
+    rmax = esv$grid$max, min.contrib = 10,
+    method = c("cressie", "equal", "npairs", "linear"),
     iter = 10, tol = sqrt(.Machine$double.eps))
 }
 \arguments{
   \item{esv}{pilot semivariogram estimate, a
   \code{\link{np.svar}}-\code{\link{class}} (or
   \code{\link{svar.bin}}) object. Typically an output of
-  the function \code{\link{svarisonp}}.}
+  the function \code{\link{np.svariso}}.}
 
-  \item{dk}{dimension of the kappa function (should be
-  greater than or equal to the dimension of the spatial
-  process \code{ncol(esv$data$x)}).}
+  \item{dk}{dimension of the kappa function (\code{dk == 0}
+  corresponds to a model valid in any dimension; if
+  \code{dk > 0}, it should be greater than or equal to the
+  dimension of the spatial process
+  \code{ncol(esv$data$x)}).}
 
   \item{nx}{number of discretization nodes. Defaults to
   \code{min(nesv - 1, 50)}, where \code{nesv} is the number
@@ -24,8 +26,9 @@
   \item{rmax}{maximum lag considered in the discretization
   (range of the fitted variogram on output).}
 
-  \item{min.contrib}{minimum number of contributing pairs
-  (pilot estimates with a lower number are ignored).}
+  \item{min.contrib}{minimum number of (equivalent)
+  contributing pairs (pilot estimates with a lower number
+  are ignored, with a warning).}
 
   \item{method}{string indicating the WLS fitting method to
   be used (e.g. \code{method = "cressie"}). See "Details"
@@ -39,9 +42,8 @@
 }
 \value{
   Returns the fitted variogram model, an object of
-  \code{\link{class}} \code{sb.iso} (extends
-  \code{\link{svarmod}}) with an additional component
-  \code{fit} containing: \item{u}{vector of
+  \code{\link{class}} \code{fitsvar} with an additional
+  component \code{fit} containing: \item{u}{vector of
   lags/distances.} \item{sv}{vector of pilot semivariogram
   estimates.} \item{fitted.sv}{vector of fitted
   semivariances.} \item{wls}{value of the WLS objective
@@ -63,16 +65,16 @@
   The different options for the argument \code{method}
   define the WLS algorithm used: \describe{
   \item{\code{"cressie"}}{The default method. The procedure
-  is iterative, with \eqn{w_i=1} (OLS) used for the first
+  is iterative, with \eqn{w_i = 1} (OLS) used for the first
   step and with the weights recalculated at each iteration,
   following Cressie (1985), until convergence: \deqn{w_i =
   N(h_i)/\gamma(\hat{\theta}; h_i)^2,} where \eqn{N(h_i)}
   is the (equivalent) number of contributing pairs in the
   estimation at lag \eqn{h_i}.}
-  \item{\code{"equal"}}{Ordinary least squares:
-  \eqn{w_i=1}.} \item{\code{"npairs"}}{\eqn{w_i=N(h_i).}}
-  \item{\code{"gstat"}}{The default fitting method in
-  \pkg{gstat}: \eqn{w_i = N(h_i)/h_i^2}.} } Function
+  \item{\code{"equal"}}{Ordinary least squares: \eqn{w_i =
+  1}.} \item{\code{"npairs"}}{\eqn{w_i = N(h_i).}}
+  \item{\code{"linear"}}{\eqn{w_i = N(h_i)/h_i^2} (default
+  fitting method in \pkg{gstat} package).} } Function
   \code{\link[quadprog]{solve.QP}} of \pkg{quadprog}
   package is used to solve the quadratic programming
   problem. If \code{nx} and/or \code{dim(esv)} are large,
@@ -106,6 +108,7 @@
   Analysis}, \bold{11}, 87-96.
 }
 \seealso{
-  \code{\link{svarmod.sb.iso}}, \code{\link{disc.sb}}.
+  \code{\link{svarmod.sb.iso}}, \code{\link{disc.sb}},
+  \code{\link{plot.fitsvar}}.
 }
 

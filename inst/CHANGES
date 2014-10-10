@@ -1,3 +1,113 @@
+Version 0.3-6 (2014-10-16)
+
+    o Changes on "h.cv.bin.data" and "hcv.data" (improved calculations, 
+      'warn' parameter added, ...).
+
+    o Changed the default value of "hat.bin" argument to TRUE in "locpol.svar.bin",
+      "np.svar", "np.svariso" and "np.svariso.corr" (to allow for the computation 
+      of approximated estimation variances, e.g. in fitsvar.sb.iso).
+
+    o Changes on "fitsvar.sb.iso" ('min.contrib', 'gstat' -> 'linear' method, ...).
+    
+
+Version 0.3-5 (2014-08-10)
+
+    o Added "plot()" S3 methods for "svar.bin" and "np.svar" classes.
+
+    o Updated demos 'aquifer' and 'variogram'.
+    
+    o "simage.default()" calls "box()" to avoid overplotting of the axis lines.
+
+    o Minor changes on FORTRAN routines "set_bin_den", set_grid_bin ('grid_module.f90') 
+      and "lp" ('lp_module.f90') to avoid problems with large covariate/coordinate values.
+      Warning: there may be differences with estimates computed with older versions.
+
+    o Minor changes on FORTRAN routine "predict_locpol_bin" (in 'lp_module.f90') 
+      to allow for extrapolations (e.g. near the grid border).
+      
+
+      
+Version 0.3-4 (2014-05-05)
+
+    o Minor changes on "fitsvar.sb.iso", now returns an object of class "fitsvar" 
+      (and inherits "sb.iso").
+
+    o Added "plot()" S3 methods for "np.den" and "fitsvar" classes.
+
+    o Added "hot.colors()" (and ".rev.colorRampPalette()").
+
+    o Added "cpu.time()" and ".cpu.time.ini()" ('npsp-internals').
+
+    o Updated demo 'aquifer'.
+    
+
+Version 0.3-3 (2014-04-04)
+
+    o Added "as.bin.data" generic function.
+    
+    o Minor changes on "spersp.default" and "simage.default" to allow for 
+      non matrix arguments (of appropriate length) 'z' and 's' respectively.      
+    
+    o Minor changes on FORTRAN routine "lp" (in 'lp_module.f90') to avoid potential 
+      problems with memory allocation in case of error ('there is not enough data 
+      in neighborhoods').
+      
+
+Version 0.3-2 (2014-03-24)
+
+    o Updated demo 'aquifer' (illustrating the use of "np.svariso.corr()").
+
+    o Minor changes on "bin.data", "locpol.bin", "svar.bin" and "np.svar" to
+      allow for a dim attribute in argument 'y'.  
+
+    o Minor changes on "disc.sb()" (computation of the discretization nodes when 'dk = 0').
+
+    o Fixed bug (when 'degree = 0') in fortran subroutine "lp" ("lp_module.f90").
+
+
+Version 0.3-1 (2014-03-16)
+
+    o Added "splot()", "scolor()" and "jet.colors()"
+      (utilities for plotting with a color scale). 
+
+    o Added "spoints()", "spersp()" and "simage()" S3 generic functions (and methods).
+
+    o Added "persp()" and "image()" S3 methods for class "data.grid".
+    
+    o Changes on package demos (to not depend on package 'fields' for graphic display).
+
+    o Updated documentation ('aquifer', 'earthquakes', 'locpol', 'binning', 'h.cv', ...).
+    
+
+Version 0.3-0 (2014-03-03)
+
+    o Added "np.svariso.corr()" function (nonparametric bias-corrected variogram 
+      estimation under non-constant trend). 
+      
+    o Renamed "svarisonp()" and "svarisohcv()" to "np.svariso()" and "np.svariso.hcv()"
+      respectively.  
+       
+    o Minor changes on "np.svariso.hcv()".  
+    
+    o Improvements in the computation of the optimal bandwidth with the "GCV" criterion
+      for dependent data ("h.cv()" and "hcv.data()" functions). 
+
+    o Updated documentation of "np.svar", "locpol" and "binning".
+
+
+Version 0.2-5 (2014-20-01)
+
+    o Added "varcov()" S3 generic function (and methods).  
+
+    o Changes on "covar()" (it is now an S3 generic function).  
+
+    o Changes on "svarmod()" and "svarmod.sb.iso()" 
+      ("type" specifies a subclass of "svarmod").
+      
+    o Minor bug fixes in "h.cv()" and "hcv.data()" (to ensure binning/data hat 
+      matrix computation when needed).
+
+
 Version 0.2-4 (2013-11-01)
 
     o Added "aquifer" package demo.
@@ -43,7 +153,7 @@ Version 0.2-2 (2013-10-15)
     o Added a "dimnames" argument to "grid.par" function 
       (constructor of the class of the same name).
     
-    o Minor changes on "binning" and "interp.data.grid" functions.
+    o Minor changes on "binning()" and "interp.data.grid()".
 
 
 Version 0.2-1 (2013-09-12)
@@ -59,7 +169,7 @@ Version 0.2-1 (2013-09-12)
       (".onLoad" -> ".onAttach", ...).
 
 
-Version 0.2 (2013-06-25)
+Version 0.2-0 (2013-06-25)
 
     o Major changes in R functions "locpol.default", "locpol.bin.data" and "svarisonp":
     
@@ -97,7 +207,7 @@ Version 0.1-7 (2013-02-19)
 
     o Added "h.cv.bin()" and "h.cv()" functions (EXPERIMENTAL).  
     
-    o Changes on "locpolhcv" and "svarisohcv()".
+    o Changes on "locpolhcv()" and "svarisohcv()".
 
     o Changes on "predict.locpol.bin()" (new fortran code). 
     

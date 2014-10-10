@@ -1,10 +1,17 @@
 \name{binning}
+\alias{as.bin.data}
+\alias{as.bin.data.data.grid}
 \alias{bin.data}
 \alias{bin.data-class}
 \alias{binning}
 \title{Linear binning}
 \usage{
   binning(x, y = NULL, nbin = NULL, set.NA = FALSE)
+
+  as.bin.data(object, ...)
+
+  \method{as.bin.data}{data.grid} (object, data.ind = 1,
+    weights.ind = NULL, ...)
 }
 \arguments{
   \item{x}{vector or matrix of covariates (e.g. spatial
@@ -18,6 +25,19 @@
 
   \item{set.NA}{logical. If \code{TRUE}, sets binning cells
   without data to missing.}
+
+  \item{object}{(gridded data) used to select a method.}
+
+  \item{...}{further arguments passed to or from other
+  methods.}
+
+  \item{data.ind}{integer or character with the index or
+  name of the component containing the bin averages.}
+
+  \item{weights.ind}{integer or character with the index or
+  name of the component containing the bin counts/weights
+  (if not specified, they are set to \code{as.numeric(
+  is.finite( object[[data.ind]] ))}).}
 }
 \value{
   If \code{y != NULL}, an S3 object of \code{\link{class}}
@@ -50,14 +70,14 @@
   Setting \code{set.NA = TRUE} (equivalent to
   \code{biny[binw == 0] <- NA}) may be useful for plotting
   the binned averages \code{$biny} (the hat matrix should
-  be handle with care when using \code{\link{locpol}}).
+  be handled with care when using \code{\link{locpol}}).
 }
 \examples{
+with(earthquakes, spoints(lon, lat, mag, main = "Earthquake data"))
+
 bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(30,30), set.NA = TRUE)
 
-coorvs <- coordvalues(bin)
-ns <- names(coorvs)                           # dimnames(bin$grid)
-image( coorvs[[1]], coorvs[[2]], bin$biny, main = 'Binning averages', xlab = ns[1], ylab = ns[2])
+simage(bin, main = "Binning averages")
 with(earthquakes, points(lon, lat, pch = 20))
 }
 \references{
@@ -67,6 +87,6 @@ with(earthquakes, points(lon, lat, pch = 20))
 }
 \seealso{
   \code{\link{data.grid}}, \code{\link{locpol}},
-  \code{\link{bin.den}}.
+  \code{\link{bin.den}}, \code{\link{h.cv}}.
 }
 

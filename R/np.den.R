@@ -2,8 +2,15 @@
 #   np.den.R (npsp package)
 #--------------------------------------------------------------------
 #   bin.den  S3 class and methods
-#   bin.den(x, nbin = NULL)
+#       bin.den(x, nbin)
+#   as.bin.den()
+#       as.bin.den.bin.data(object, ...)
 #   np.den  S3 class and methods
+#   np.den()  S3 generic
+#       np.den.default(x, nbin, h, degree, drv, ncv, ...)
+#       np.den.bin.den(x, h, degree, drv, ncv, ...)
+#       np.den.bin.data(x, h, degree, drv, ncv, ...)   
+#       np.den.svar.bin(x, h, degree, drv, ncv, ...) 
 #
 #   (c) R. Fernandez-Casal         Last revision: Oct 2013
 #--------------------------------------------------------------------
@@ -19,14 +26,15 @@
 #' @aliases bin.den-class
 #' @param  x vector or matrix of covariates (e.g. spatial coordinates). 
 #'    Columns correspond with dimensions and rows with observations.
-#' @param  nbin vector with the number of bins (\eqn{intervals = nbin + 1}) on each dimension.
+#' @param  nbin vector with the number of bins on each dimension.
 #' @details If parameter \code{nbin} is not specified is set to \code{rep(25, ncol(x))}.
 #' @return Returns an S3 object of \code{\link{class}} \code{bin.den} (extends \code{\link{data.grid}}). 
 #'    A list with the following 3 components:
 #' \item{binw}{vector or array (dimension \code{nbin}) with the bin counts (weights).}
 #' \item{grid}{a \code{\link{grid.par}}-\code{\link{class}} object with the grid parameters.}
 #' \item{data}{a list with a component \code{$x} with argument \code{x}.}
-#' @seealso \code{\link{data.grid}}, \code{\link{bin.data}}, \code{\link{locpol}}.
+#' @seealso \code{\link{np.den}}, \code{\link{bin.data}}, \code{\link{bin.data}}, 
+#' \code{\link{locpol}}.
 #' @export
 # Interface to the fortran routine "bin_den"
 bin.den <- function(x, nbin = NULL) {
@@ -118,12 +126,7 @@ as.bin.den.bin.data <- function(object, ...) {
 #' ## Equivalent to:
 #' ## den <- np.den(earthquakes[, c("lon", "lat")], h = hden$h, nbin = c(30,30))
 #'
-#' coorvs <- coordvalues(bin)
-#' ns <- names(coorvs)                           
-#' image( coorvs[[1]], coorvs[[2]], log(den$est), main = 'Estimated log(density)',
-#'             xlab = ns[1], ylab = ns[2])
-#' contour(coorvs[[1]], coorvs[[2]], log(den$est), add = TRUE)
-#' with(earthquakes, points(lon, lat, pch = 20))
+#' plot(den, main = 'Estimated log(density)')
 #' @export
 np.den <- function(x, ...) UseMethod("np.den")
 #--------------------------------------------------------------------
@@ -154,7 +157,7 @@ np.den <- function(x, ...) UseMethod("np.den")
 np.den.default <- function(x, nbin = NULL, h = NULL, degree = 1 + as.numeric(drv), 
                             drv = FALSE, ncv = 0, ...) {    
   xbin <- bin.den(x, nbin)
-  return(np.den.bin.den(xbin, h = h, degree = degree, drv = drv, ncv = ncv, ...))
+  return(locpol.bin.den(xbin, h = h, degree = degree, drv = drv, ncv = ncv, ...))
 }
 
 

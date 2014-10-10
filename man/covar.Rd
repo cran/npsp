@@ -1,27 +1,38 @@
 \name{covar}
 \alias{covar}
+\alias{covar.np.svar}
+\alias{covar.svarmod}
 \title{Covariance values}
 \usage{
-  covar(x, h, sill = x$sill)
+  covar(x, h, ...)
+
+  \method{covar}{svarmod} (x, h, sill = x$sill, ...)
+
+  \method{covar}{np.svar} (x, h, sill = NULL, ...)
 }
 \arguments{
-  \item{x}{variogram model (\code{\link{svarmod}} object).}
+  \item{x}{variogram model (\code{\link{svarmod}} object)
+  or semivariogram estimate.}
 
-  \item{h}{vector (isotropic case) or matrix of lags
+  \item{h}{vector (isotropic case) or matrix of lag
   values.}
 
-  \item{sill}{variance \eqn{C(0) = \sigma^2} or pseudo-sill
-  (unbounded variograms).}
+  \item{...}{further arguments passed to or from other
+  methods.}
+
+  \item{sill}{(theoretical or estimated) variance \eqn{C(0)
+  = \sigma^2} or pseudo-sill (unbounded variograms).}
 }
 \value{
   A vector of (pseudo) covariance values \eqn{C(h_i) =
-  \sigma^2 - \gamma(h_i)}.
+  \sigma^2 - \gamma(h_i)} or covariance estimates.
 }
 \description{
-  Computes covariance values given a variogram model (or
-  pseudo-covariances for unbounded variograms).
+  Computes covariance values (or pseudo-covariances) given
+  a variogram model or covariance estimates given a
+  semivariogram estimate.
 }
 \seealso{
-  \code{\link{sv}}.
+  \code{\link{sv}}, \code{\link{varcov}}.
 }
 

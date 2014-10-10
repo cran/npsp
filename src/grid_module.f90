@@ -193,19 +193,20 @@
 !           Calcular dimensiones rejilla binning
             minx = x(1:nd, 1)
             maxx = minx
-            do i = 2, ny
-                do j = 1, nd
+            do j = 1, nd
+                do i = 2, ny
                     if (minx(j) > x(j, i)) then
                         minx(j) = x(j, i)
                     else if (maxx(j) < x(j, i)) then
                         maxx(j) = x(j, i)
                     end if
                 end do
+!               Expandir un poco                
+                tmp = MAX(maxx(j)-minx(j), DABS(minx(j)))* (1.0d2*epsilon(1.0d0)) 
+                minx(j) = minx(j) - tmp
+                maxx(j) = maxx(j) + tmp
             end do
-!           Expandir un poco y establecer rejilla
-            tmp = 1.0d2*epsilon(1.0d0)
-            minx = minx-tmp
-            maxx = maxx+tmp
+!           Establecer rejilla
             call set_grid(g, nd, nbin, minx, maxx)
 !           Asignar memoria rejilla binning
             allocate(g%w(g%ngrid))
@@ -281,19 +282,20 @@
 !           Calcular dimensiones rejilla binning
             minx = x(1:nd, 1)
             maxx = minx
-            do i = 2, ny
-                do j = 1, nd
+            do j = 1, nd
+                do i = 2, ny
                     if (minx(j) > x(j, i)) then
                         minx(j) = x(j, i)
                     else if (maxx(j) < x(j, i)) then
                         maxx(j) = x(j, i)
                     end if
                 end do
+!               Expandir un poco                
+                tmp = MAX(maxx(j)-minx(j), DABS(minx(j)))* (1.0d2*epsilon(1.0d0)) 
+                minx(j) = minx(j) - tmp
+                maxx(j) = maxx(j) + tmp
             end do
-!           Expandir un poco y establecer rejilla
-            tmp = 1.0d2*epsilon(1.0d0)
-            minx = minx - tmp
-            maxx = maxx + tmp
+!           Establecer rejilla
             call set_grid(g, nd, nbin, minx, maxx)
 !           Asignar memoria rejilla binning
             allocate(g%y(g%ngrid), g%w(g%ngrid))
@@ -422,7 +424,7 @@
     subroutine interp_data_grid( nd, nbin, bin_min, bin_max,     &
    &                    ngrid, gy, x, ny, y)
 !   --------------------------------------------------------------------
-!       Interfaz para la rutina de R "interp.data.grid"
+!       Interfaz para la rutina de R "interp.grid.par"
 !       Interpolacion lineal de una rejilla
 !       Establece type(grid) :: g a partir de parámetros
 !   --------------------------------------------------------------------
@@ -505,7 +507,6 @@
         end do
     return
     end subroutine interp_grid
-
 
 
 

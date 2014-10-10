@@ -16,7 +16,7 @@
 \arguments{
   \item{x}{variogram model (\code{\link{svarmod}} object).}
 
-  \item{h}{vector (isotropic case) or matrix of lags
+  \item{h}{vector (isotropic case) or matrix of lag
   values.}
 
   \item{...}{further arguments passed to or from other
