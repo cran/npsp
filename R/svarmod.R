@@ -12,7 +12,7 @@
 #
 #   (c) R. Fernandez-Casal         Last revision: Apr Sep 2013
 #--------------------------------------------------------------------
-# NOTA: para modelos isotrópicos paramétricos se toma (provisionalmente) 
+# NOTA: para modelos isotropicos parametricos se toma (provisionalmente)
 #       como referencia geoR
 #
 # PENDENTE:
@@ -47,15 +47,16 @@
 #' \code{\link{sv}}, \code{\link{covar}}.
 #' @export
 #--------------------------------------------------------------------
-svarmod <- function(model, type = "isotropic", par = NA,
+svarmod <- function(model, type = "isotropic", par,
                       nugget = NULL, sill = NULL, range = NULL) {
 # Define a (semi)variogram model
-# En los modelos paramétricos:
+# Nos modelos parametricos:
 #   names(par) <- c('psill', 'phi', 'nugget', 'kappa')
 #   phi = scale parameter
-# PENDIENTE: ASIGNAR nugget, sill Y range AUTOMÁTICAMENTE
+# PENDENTE: ASIGNAR nugget, sill e range AUTOMATICAMENTE
 #--------------------------------------------------------------------
     model <- match.arg(model, svarmodels(type))
+    if (missing(par)) stop("'par' argument must be provided.")
     if (model == "pure.nugget") sill <- nugget <- par[1]
     if (is.null(nugget)) nugget <- par[3]
     if (is.null(sill)) 
@@ -164,6 +165,7 @@ sv.default <- function(x, h, ...) stop("Invalid variogram object")
 #' @method sv svarmod
 #' @export
 sv.svarmod <- function(x, h, ...) as.vgm.svarmod(x, h)$covtable
+# variogramLine(as.vgm.svarmod(x), dist_vector = h)[[2]]
 # stop("Not defined (yet) for general variogram models")
 #--------------------------------------------------------------------
 

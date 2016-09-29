@@ -1,37 +1,51 @@
 
-List of (desired) future work to be done: 
+List of (desired) future work to be done:
+========================================
 
-    o Add to 'inst' a 'CITATION' file for use by the citation function.
-        
-  
-    o Depend / Import / Suggest  'sp' package
+Version 0.6.X
+
+    * Add "summary()" S3 methods for "locpol.bin" and "np.svar" classes.
+
+
+Version 0.7.X
+
+    * Multidimensional kriging (simple and residual).
+
+
+Version 1.0
+
+    * Anisotropic variogram models (spatio-temporal case).
+
+    
+	* 'locpol', 'np.den' and 'np.svar' methods for 'sp'-classes
+      'as.sp' methods for 'npsp'-classes
+    
+	
+	* 'locpol', 'np.den' and 'np.svar' methods for 'data.grid'-class (avoiding binning)
+
+
+
+Version X.X
+
+    * Bootstrap, GoF-tests, ...
+
+
+    * Additive and partially linear trend models
+
+
+    * Local Kriging
+
+
+    * Multidimensional kriging (ordinary and universal)
+
+
+    * Add to 'inst' a 'CITATION' file for use by the citation function.
+
+
+    * Depend / Import / Suggest  'sp' package
       Suggest / Recommend 'gstat', 'geoR', 'fields' packages
 
-      ‘Depends’, ‘Suggests’, ‘Imports’, ‘Enhances’ ... packages
-      See the information on DESCRIPTION files in the chapter 'Creating R
-      packages' of the 'Writing R Extensions' manual.
-      
- 
-    o 'locpol', 'np.den' and 'np.svar' methods for 'data.grid'-class (avoiding binning)
 
- 
-    o 'locpol', 'np.den' and 'np.svar' methods for 'sp'-classes 
-      'as.sp' methods for 'npsp'-classes 
-
-
-    o Kriging
-
-
-    o Anisotropic variogram models (spatio-temporal case)
-
-
-    o Multidimensional kriging (simple, ordinary, universal and 'residual')
-
-
-    o Additive and partially linear trend models
-
-
-    o Local Kriging
 
  
       

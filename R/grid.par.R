@@ -12,11 +12,12 @@
 #       coordvalues.grid.par(x)
 #
 # PENDENTE:
-#   - renombrar coords -> coordinates ? (problemas có método S4 de sp?)
+#   - renombrar coords -> coordinates ? (problemas co metodo S4 de sp?)
 #   - is.grid.par()
 #   - ndim()
 #
-#   (c) R. Fernandez-Casal         Last revision: Aug 2012
+#   (c) Ruben Fernandez-Casal
+#   Created: Aug 2012                          Last changed:
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------

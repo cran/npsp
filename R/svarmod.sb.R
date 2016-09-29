@@ -5,10 +5,11 @@
 #   disc.sb(nx, dk, rmax)
 #   fitsvar.sb.iso(esv, dk, nx, rmax, min.contrib, method, iter, tol)
 #
-#   (c) R. Fernandez-Casal         Last revision: Apr 2013
+#   (c) R. Fernandez-Casal
+#   Created: Apr 2013                          Last changed: Mar 2015
 #--------------------------------------------------------------------
 # PENDENTE:
-#   - documentación
+#   - documentacion
 #   - @examples
 #--------------------------------------------------------------------
 
@@ -50,7 +51,7 @@ kappasb <- function(x, dk = 0) {
   if ( zeros <- any(index <- x < sqrt(.Machine$double.eps)) ) {
       dx <- dim(x)
       x <- x[!index]
-      # Alternativamente se podría hacer pmax(x, .Machine$double.eps^0.5)
+      # Alternativamente poderiase facer pmax(x, .Machine$double.eps^0.5)
   }    
   res <- switch( min(dk + 1, 5),
       exp(-x*x),            # dk = 0
@@ -78,7 +79,7 @@ kappasb <- function(x, dk = 0) {
 #' variogram model, following Gorsich and Genton (2004), as the scaled roots of 
 #' Bessel functions.
 #' @param  nx  number of discretization nodes.
-#' @param  dk  dimension of the kappa function.
+#' @param  dk  dimension of the kappa function (\code{dk >= 1}, see Details below).
 #' @param  rmax  maximum lag considered.
 #' @details
 #' If \code{dk >= 1}, the nodes are computed as: 
@@ -92,7 +93,7 @@ kappasb <- function(x, dk = 0) {
 #' the nodes are computed so the gaussian variogram models involved have
 #' practical ranges: 
 #    \deqn{r_i = ( 1 + 1.2(i-1))rmax/nx; i = 1,\ldots, nx.}
-#'    \deqn{r_i = ( 1 + (i-1))rmax/nx; i = 1,\ldots, nx.}
+#'    \deqn{r_i = 2 ( 1 + (i-1) ) rmax/nx; i = 1,\ldots, nx.}
 #' @references
 #' Ball, J.S. (2000) Automatic computation of zeros of Bessel functions and other
 #'   special functions. \emph{SIAM Journal on Scientific Computing}, \bold{21}, 
@@ -115,11 +116,13 @@ kappasb <- function(x, dk = 0) {
 disc.sb <- function(nx, dk = 0, rmax = 1) {   
 #--------------------------------------------------------------------
     if (dk == 0) 
-        # OJO: equiv. modelos gausianos, pueden aparecer inestabilidades
-        # Nodos de discretización "geométricos"
+        # OLLO: equiv. modelos gausianos, poden aparecer inestabilidades
+        # Nodos de discretizacion "xeometricos"
         # return( 1.732/(seq(1, by = -1/nx, length = nx) * rmax) )
         # return( sqrt(3)/(seq(1/nx, by = 1.2/nx, length = nx) * rmax) )
-        return( sqrt(3)/(seq(1/nx, 1, length = nx) * rmax) )
+        # return( sqrt(3)/(seq(1/nx, 1, length = nx) * rmax) )
+        return( sqrt(3)/(seq(1/nx, 1, length = nx) * 2 * rmax) )
+    # dk > 1
     # Let's go FORTRAN!
     #   subroutine disc_sbv(nx, x, dim, range)
     ret <-.Fortran( "disc_sbv", nx = as.integer(nx), x = double(nx), 
@@ -175,18 +178,20 @@ disc.sb <- function(nx, dk = 0, rmax = 1) {
 #'  \item{\code{"linear"}}{\eqn{w_i = N(h_i)/h_i^2} 
 #'  (default fitting method in \pkg{gstat} package).} 
 #' } 
-#' Function \code{\link[quadprog]{solve.QP}} of \pkg{quadprog} package is used 
-#' to solve the quadratic programming problem. If \code{nx} and/or \code{dim(esv)}
-#' are large, this function may fail with error message "matrix D in quadratic 
-#' function is not positive definite!". 
+#' Function \code{\link[quadprog]{solve.QP}} of \pkg{quadprog} package is used
+#' to solve a strictly convex quadratic program. To avoid problems, the Choleski decomposition
+#' of the matrix corresponding to the original problem is computed using \code{\link{chol}} with \code{pivot = TRUE}.
+#' If this matrix is only positive semi-definite (non-strictly convex QP),
+#' the number of discretization nodes will be less than \code{nx}.
 #' @return
-#' Returns the fitted variogram model, an object of \code{\link{class}} \code{fitsvar} 
+#' Returns the fitted variogram model, an object of \code{\link{class}} \code{fitsvar}.
+#' A \code{\link{svarmod}} object
 # (extending \code{\link{sb.iso}}: a \code{\link{svarmod}}) object
 #' with an additional component \code{fit} containing:
 #' \item{u}{vector of lags/distances.}
 #' \item{sv}{vector of pilot semivariogram estimates.}
 #' \item{fitted.sv}{vector of fitted semivariances.}
-#' \item{wls}{value of the WLS objective function.}
+#' \item{wls}{value of the objective function.}
 #' \item{method}{string indicating the WLS fitting method used.}
 #' \item{iter}{number of WLS iterations (if \code{method == "cressie"}).}   
 #' 
@@ -212,6 +217,25 @@ disc.sb <- function(nx, dk = 0, rmax = 1) {
 #'   and Data Analysis}, \bold{11}, 87-96. 
 #' @seealso
 #' \code{\link{svarmod.sb.iso}}, \code{\link{disc.sb}}, \code{\link{plot.fitsvar}}.
+#' @examples
+#' # Trend estimation
+#' lp <- locpol(aquifer[,1:2], aquifer$head, nbin = c(41,41),
+#'              h = diag(100, 2), hat.bin = TRUE)
+#'                                # 'np.svariso.corr()' requires a 'lp$locpol$hat' component
+#'
+#' # Variogram estimation
+#' esvar <- np.svariso.corr(lp, maxlag = 150, nlags = 60, h = 60, plot = FALSE)
+#'
+#' # Variogram fitting
+#' svm2 <- fitsvar.sb.iso(esvar)  # dk = 2
+#' svm3 <- fitsvar.sb.iso(esvar, dk = 0) # To avoid negative covariances...
+#' svm4 <- fitsvar.sb.iso(esvar, dk = 10) # To improve fit...
+#'
+#' plot(svm4, main = "Nonparametric bias-corrected semivariogram and fitted models", legend = FALSE)
+#' plot(svm3, add = TRUE)
+#' plot(svm2, add = TRUE, lty = 3)
+#' legend("bottomright", legend = c("NP estimates", "fitted model (dk = 10)", "dk = 0", "dk = 2"),
+#'             lty = c(NA, 1, 1, 3), pch = c(1, NA, NA, NA), lwd = c(1, 2, 1, 1))
 #' @export
 #--------------------------------------------------------------------
 fitsvar.sb.iso <- function(esv, dk = ncol(esv$data$x), nx = NULL, rmax = esv$grid$max, 
@@ -219,102 +243,127 @@ fitsvar.sb.iso <- function(esv, dk = ncol(esv$data$x), nx = NULL, rmax = esv$gri
         iter = 10, tol = sqrt(.Machine$double.eps)) {
 #   PENDENTE:
 #     - Rounding errors?  w <- w/sum(w)
-#     - rematar documentación: details, examples, ...
-#     - Versión preliminar, final 'fit.svar.sb' válida para modelos anisotrópicos
+#     - rematar documentacion: details, examples, ...
+#     - Version preliminar, final 'fit.svar.sb' valida para modelos anisotropicos
 #     - verificar missing values
-#     - nodes un vector de ptos de discretización
+#     - nodes un vector de ptos de discretizacion
 #--------------------------------------------------------------------
-    if (!inherits(esv, "svar.bin"))
-      stop("function only works for objects of class (or extending) 'svar.bin'.")
-    # if (esv$svar$type != "isotropic")
-    if (esv$grid$nd != 1)
-      stop("pilot variogram estimates 'esv' must be isotropic.")
-    method <- match.arg(method)    
-    if (method != "cressie") iter <- 1         
-    # if (!require(quadprog)) stop("'quadprog' package is required.")
-    # Let's go...
-    u <- as.numeric(coords(esv))
-    if (inherits(esv, "np.svar")) { 
-        # "np.svar" class 
-        v <- esv$est
-        if (!is.null(esv$locpol$hat)) {
-            # Aproximación varianza estilo Cressie (suponiendo independencia) para ajuste wls
-            # PENDIENTE: ESCRIBIR/REVISAR ESTAS CUENTAS            
-            n <- 1 / with(esv, rowSums(locpol$hat^2 / 
-                pmax(matrix(binw, nrow=grid$n, ncol=grid$n, byrow=TRUE), 1))) # nº equivalente de aportaciones
-        } else {
-            n <- esv$binw # nº de aportaciones            
-        }    
+  if (!inherits(esv, "svar.bin"))
+    stop("function only works for objects of class (or extending) 'svar.bin'.")
+  # if (esv$svar$type != "isotropic")
+  if (esv$grid$nd != 1)
+    stop("pilot variogram estimates 'esv' must be isotropic.")
+  method <- match.arg(method)
+  if (method != "cressie") iter <- 1
+  # if (!requireNamespace(quadprog)) stop("'quadprog' package is required.")
+  # Let's go...
+  u <- as.numeric(coords(esv))
+  if (inherits(esv, "np.svar")) {
+    # "np.svar" class
+    v <- esv$est
+    if (!is.null(esv$locpol$hat)) {
+      # Aproximacion varianza estilo Cressie (suponiendo independencia) para ajuste wls
+      # PENDIENTE: ESCRIBIR/REVISAR ESTAS CUENTAS
+      n <- 1 / with(esv, rowSums(locpol$hat^2 /
+                                   pmax(matrix(binw, nrow=grid$n, ncol=grid$n, byrow=TRUE), 1))) # num equivalente de aportacions
     } else {
-        # "svar.bin" class 
-        v <- esv$biny
-        n <- esv$binw # nº de aportaciones    
+      n <- esv$binw # num de aportacions
     }
-    if (!all(index <- n >= min.contrib)) {
-        warning("some pilot semivariogram estimates will be ignored (contrib < min.contrib)")
-        u <- u[index]
-        v <- v[index]
-        n <- n[index]
+  } else {
+    # "svar.bin" class
+    v <- esv$biny
+    n <- esv$binw # num de aportacions
+  }
+  if (!all(index <- n >= min.contrib)) {
+    warning("some pilot semivariogram estimates will be ignored (contrib < min.contrib)")
+    u <- u[index]
+    v <- v[index]
+    n <- n[index]
+  }
+  n.esv <- length(u)
+  # Discretization points
+  if (is.null(nx)) {
+    nx <- min(n.esv - 1, 50)
+  } else {
+    if (nx >= length(u)) {
+      warning("'nx' must be less than the number of variogram estimates (corrected)")
+      nx <- n.esv - 1
     }
-    n.esv <- length(u)
-    # Discretization points
-    if (is.null(nx)) {
-        nx <- min(n.esv - 1, 50)
-    } else {
-        if (nx >= length(u)) {
-          warning("'nx' must be less than the number of variogram estimates (corrected)")
-          nx <- n.esv - 1
-        }  
-    }  
-    x <- disc.sb( nx, dk, rmax)
-    # M(1:nesv,1:npar)
-    # M <- cbind(-outer(u, x, function(u, x) kappasb(u*x, dk)), 1)      
-    M <- cbind( -kappasb(outer(u, x), dk), 1)
-    # Reescalar pesos
-    w <- switch(method,
-        npairs =  n,
-        linear =   n/pmax(u^2, .Machine$double.eps^0.5),
-                  1 # default: "cressie", "equal"
-        )
-    w <- w/sum(w)
-    # (iterative) quadratic programming
-    n.par <- nx + 1 
-    bvec <- rep(0, n.par)
-    Amat <- diag(n.par)
-    Amat[1:nx, n.par] <- -1   
-    # wls loop
-    i <- 0
-    conver <- FALSE
-    while( (i < iter) & !conver) {
-        i <- i + 1
-        # d = t(M) %*% diag(w) %*% v
-        dvec <- drop((w * v) %*% M)
-        # D = t(M) %*% diag(w) %*% M
-        Dmat <- crossprod(sqrt(w) * M)
-        # solve min(-d^T b + 1/2 b^T D b) with the constraints A^T·b >= b_0
-        res <- solve.QP(Dmat, dvec, Amat, bvec)
-        fit <- drop(M %*% res$solution)
-        if (i > 1) {
-            # Absolute parameter difference convergence criteria
-            conver <-  max(abs(sol - res$solution)) < tol
-            w <- n/pmax(fit^2, .Machine$double.eps^0.5)
-            w <- w/sum(w)
-        }
-        wls <- sum(w*(v-fit)^2)
-        sol <- res$solution
-    }    
-    if (method != "cressie") conver <- TRUE else iter <- i
+  }
+  x <- disc.sb( nx, dk, rmax)
+  # x <- sqrt(3)/u[1:nx]
+  # x <- sqrt(3)/u[2:(nx + 1)]
+  # M(1:nesv,1:npar)
+  # M <- cbind(-outer(u, x, function(u, x) kappasb(u*x, dk)), 1)
+  M <- cbind( -kappasb(outer(u, x), dk), 1)
+  # Reescalar pesos
+  w <- switch(method,
+              npairs =  n,
+              linear =   n/pmax(u^2, sqrt(.Machine$double.eps)),
+              1 # default: "cressie", "equal"
+  )
+  w <- w/sum(w)
+  # (iterative) quadratic programming
+  n.par <- nx + 1
+  Amat <- diag(n.par)
+  Amat[1:nx, n.par] <- -1
+  # wls loop
+  i <- 0
+  conver <- FALSE
+  while( (i < iter) & !conver) {
+    i <- i + 1
+    # D = t(M) %*% diag(w) %*% M
+    Dmat <- suppressWarnings(chol(crossprod(sqrt(w) * M), pivot = TRUE))
+    n.par2 <- attr(Dmat, "rank")
+    pivot <- attr(Dmat, "pivot")[1:n.par2]
+    inu <- match(n.par, pivot, nomatch = 0)
+    if (!inu) stop('the algorithm has failed to achieve an optimal solution.')
+    # max(abs(crossprod(Dmat[1:n.par2, 1:n.par2])  - crossprod(sqrt(w) * M[, pivot])))
+    # Invert the upper triangular matrix (is there a more efficient way?)
+    Dmat <- backsolve(Dmat[1:n.par2, 1:n.par2], diag(n.par2))
+    # d = t(M) %*% diag(w) %*% v
+    dvec <- drop((w * v) %*% M[, pivot]) # crossprod?
+    # solve min(-d^T b + 1/2 b^T D b) with the constraints A^T b >= b_0
+    res <- solve.QP(Dmat, dvec, Amat[pivot, pivot], factorized = TRUE) # bvec <- rep(0, n.par2)
+    fit <- drop(M[, pivot] %*% res$solution)
+    if (i > 1) {
+      # fitted values absolute difference convergence criteria
+      conver <-  max(abs(fit - last.fit)) < tol
+      w <- n/pmax(fit^2, sqrt(.Machine$double.eps))
+      w <- w/sum(w)
+    }
+    wls <- sum(w*(v-fit)^2)
+    last.fit <- fit
+  }
+  if (method == "cressie") {
+    iter <- i
     if (!conver) warning("the wls algorithm did not converge. \n",
-          "   Maximum number of iterations exceeded; \n",
-          "   the current values may be an approximate solution, \n",
-          "   or 'tol' is too big or 'iter' is too small.")
-    result <- svarmod.sb.iso( dk = dk, x = x, z = sol[-n.par], nu = sol[n.par], 
-          range = rmax)
-    result$fit <- list(u = u, sv = v, fitted.sv = fit, wls = wls, 
-        method = method, iter = iter)  
-    oldClass(result) <- c("fitsvar", oldClass(result))     
-    return(result)
-#--------------------------------------------------------------------
+                      "   Maximum number of iterations exceeded; \n",
+                      "   the current values may be an approximate solution, \n",
+                      "   or 'tol' is too big or 'iter' is too small.")
+  }
+  # Return the fitted Shapiro-Botha model
+  nu <- res$solution[inu]
+  z <- res$solution[-inu]
+  x <- x[pivot[-inu]]
+  # Rounding errors in solve.QP, the constraints A^T b >= b_0 might not (exactly) hold
+  if (any(pivot <- z < 100*.Machine$double.eps)) {
+    if (!all(pivot)) {
+      z <- z[!pivot]
+      x <- x[!pivot]
+    } else {
+      z <- 0
+      x <- x[1]
+    }
+  }
+  nu <- max(nu, sum(z))
+  result <- svarmod.sb.iso( dk = dk, x = x, z = z, nu = nu, range = rmax)
+  # Add fitting details
+  result$fit <- list(u = u, sv = v, fitted.sv = fit, wls = wls,
+                     method = method, iter = iter)
+  oldClass(result) <- c("fitsvar", oldClass(result))
+  return(result)
+  #--------------------------------------------------------------------
 } # fitsvar.sb.iso
 
 

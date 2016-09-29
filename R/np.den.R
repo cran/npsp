@@ -12,7 +12,8 @@
 #       np.den.bin.data(x, h, degree, drv, ncv, ...)   
 #       np.den.svar.bin(x, h, degree, drv, ncv, ...) 
 #
-#   (c) R. Fernandez-Casal         Last revision: Oct 2013
+#   (c) Ruben Fernandez-Casal
+#   Created: Oct 2013                          Last changed:
 #--------------------------------------------------------------------
 
 
@@ -27,14 +28,14 @@
 #' @param  x vector or matrix of covariates (e.g. spatial coordinates). 
 #'    Columns correspond with dimensions and rows with observations.
 #' @param  nbin vector with the number of bins on each dimension.
-#' @details If parameter \code{nbin} is not specified is set to \code{rep(25, ncol(x))}.
+#' @details If parameter \code{nbin} is not specified is set to \code{pmax(25, rule.binning(x))}.
 #' @return Returns an S3 object of \code{\link{class}} \code{bin.den} (extends \code{\link{data.grid}}). 
 #'    A list with the following 3 components:
 #' \item{binw}{vector or array (dimension \code{nbin}) with the bin counts (weights).}
 #' \item{grid}{a \code{\link{grid.par}}-\code{\link{class}} object with the grid parameters.}
 #' \item{data}{a list with a component \code{$x} with argument \code{x}.}
 #' @seealso \code{\link{np.den}}, \code{\link{bin.data}}, \code{\link{bin.data}}, 
-#' \code{\link{locpol}}.
+#' \code{\link{locpol}}, \code{\link{rule.binning}}.
 #' @export
 # Interface to the fortran routine "bin_den"
 bin.den <- function(x, nbin = NULL) {
@@ -49,10 +50,8 @@ bin.den <- function(x, nbin = NULL) {
         ny <- nrow(x)
     }    
     nd <- ncol(x)                                 # number of dimensions
-    if(is.null(nbin)) nbin <- rep(25,nd) else     # dimensions of the binning grid
-      #  if (!identical(nd, length(nbin)))        # Cuidado con double e integer (nd <- 1L)
-      if (nd != length(nbin))
-        stop("arguments 'x' and 'nbin' have incompatible dimensions.")
+    if(is.null(nbin)) nbin <- pmax(25L, rule.binning(x)) else   # dimensions of the binning grid
+      if (nd != length(nbin)) stop("arguments 'x' and 'nbin' have incompatible dimensions.")
     nt <- prod(nbin)
     # Let's go FORTRAN!
     # subroutine bin_den(nd, nbin, x, ny, bin_min, bin_max, bin_w)
@@ -82,18 +81,43 @@ as.bin.den <- function(object, ...) UseMethod("as.bin.den")
 
 
 #--------------------------------------------------------------------
-#' @rdname bin.den  
-#' @method as.bin.den bin.data
+#' @rdname bin.den 
+#' @method as.bin.den data.grid
+#' @param weights.ind integer or character with the index or name of the component 
+#'  containing the bin counts/weights.
 #' @export
-as.bin.den.bin.data <- function(object, ...) {
-#--------------------------------------------------------------------
-    if (!inherits(object, "bin.data"))
-        stop("function only works for objects of class (or extending) 'bin.data'")
-    result <- object[c('binw', 'grid')]
-    result$data <- list(x = object$data$x)
-    oldClass(result) <- c("bin.den", "data.grid")
-    return(result)
+as.bin.den.data.grid <- function(object, weights.ind = 1, ...) {
+  #--------------------------------------------------------------------
+  if (!inherits(object, "data.grid"))
+    stop("function only works for objects of class (or extending) 'data.grid'")
+  x <- coords(object$grid)   
+  binw <- object[[weights.ind]] 
+  index <- is.finite(binw)
+  binw[!index] <- 0
+  if (!all(index <- binw > 0)) x <- x[index, ]
+  result <- list(binw = binw, grid = object$grid, data = list(x = x))
+  oldClass(result) <- c("bin.den", "data.grid")
+  return(result)
 }
+
+
+
+#--------------------------------------------------------------------
+#' @rdname bin.den  
+#' @method as.bin.den bin.den
+#' @export
+as.bin.den.bin.den <- function(object, ...) {
+#--------------------------------------------------------------------
+  if (inherits(object, "svar.bin")) {
+    warning("Conversion not yet implemented; using 'as.bin.den.data.grid()'...")
+    return(as.bin.den.data.grid(object, weights.ind = 'binw'))
+  }  
+  if (!is.null(object$mask)) object$binw[!object$mask] <- 0
+  result <- with( object, list(binw = binw, grid = grid, data = list(x = data$x)))
+  oldClass(result) <- c("bin.den", "data.grid")
+  return(result)
+}
+
 
 
 #--------------------------------------------------------------------

@@ -44,10 +44,11 @@ as.vgm <- function(x, ...) UseMethod("as.vgm")
 #' @method as.vgm variomodel
 #' @export
 as.vgm.variomodel <- function(x, ...) {
-    if (!require(gstat)) stop("'gstat' package required.")    
+    if (!requireNamespace("gstat")) stop("'gstat' package required.")
     return(gstat::as.vgm.variomodel(x))
 }    
 # PENDENTE: renombrar rutina en gstat
+# Utilizar names(svarmodels("isotropic"))
 # gstat::as.vgm.variomodel <- function (m) {
 #    model = NULL
 #    if (m$cov.model == "exponential") 
@@ -95,7 +96,7 @@ as.vgm.svarmod <- function(x, ...)  as.vgm.variomodel(as.variomodel.svarmod(x))
 #' @export
 vgm.tab.svarmod <- function(x, h = seq(0, x$range, length = 1000), sill = x$sill, ...) {
 #--------------------------------------------------------------------
-    if (!require(gstat)) stop("'gstat' package required.")    
+    if (!requireNamespace("gstat")) stop("'gstat' package required.")
     if (!inherits(x, "svarmod"))
         stop("argument 'x' must be of class (or extending) 'svarmod'.")
     if (x$type != "isotropic")

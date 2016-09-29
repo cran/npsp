@@ -7,7 +7,8 @@
 #     plot.svar.bin(x, y, xlab, ylab, ylim, add, ...)
 #     plot.np.svar(x, y, xlab, ylab, ylim, add, ...)
 #
-#   (c) R. Fernandez-Casal         Last revision: Aug 2014
+#   (c) Ruben Fernandez-Casal
+#   Created: Aug 2014                          Last changed:
 #--------------------------------------------------------------------
 # PENDENTE:
 #   - @examples

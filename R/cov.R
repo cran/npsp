@@ -8,7 +8,8 @@
 #       varcov.isotropic(x, coords, sill = x$sill, range.taper)
 #       varcov.np.svar(x, coords, sill = max(x$est), range.taper) 
 #
-#   (c) R. Fernandez-Casal         Last revision: Jan 2014
+#   (c) R. Fernandez-Casal
+#   Created: Apr 2013                          Last changed: Jan 2014
 #--------------------------------------------------------------------
 
 
@@ -59,8 +60,8 @@ covar.svarmod  <- function(x, h, sill = x$sill, ...) {
 covar.np.svar  <- function(x, h, sill = NULL, ...) {
     if (!inherits(x, "np.svar"))
         stop("argument 'x' must be of class (or extending) 'np.svar'.")
-    result <- interp(x, data.ind ='est', newx = h)$y
-    result[h < sqrt(.Machine$double.eps)] <- 0  # COIDADO CO EFECTO NUGGET
+    result <- interp(x, data.ind ='est', newx = h)$y  # COIDADO Error in interp.grid.par 'data' has missing values
+    result[h < sqrt(.Machine$double.eps)] <- 0        # COIDADO CO EFECTO NUGGET
     if (is.null(sill)) {
         warning("'sill' parameter is set to the maximum semivariance value (computing pseudo-covariances).")
         sill = max(result)

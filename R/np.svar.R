@@ -16,7 +16,7 @@
 #   (c) R. Fernandez-Casal         Last revision: Aug 2013
 #--------------------------------------------------------------------
 # PENDENTE:
-#   - svarisohcv o final da documentación
+#   - svarisohcv o final da documentacion
 #   - engadir aniso, 2iso, niso
 #--------------------------------------------------------------------
 
@@ -34,6 +34,7 @@
 #' @details  Currently, only isotropic semivariogram estimation is supported.
 #' 
 #' If parameter \code{nlags} is not specified is set to \code{101}.
+# If parameter \code{nlags} is not specified is set to \code{max(50, rule.svar(x))}.
 #'
 #' The computation of the hat matrix of the binned semivariances (\code{hat.bin = TRUE})
 #' allows for the computation of approximated estimation variances (e.g. in \code{\link{fitsvar.sb.iso}}).
@@ -106,6 +107,9 @@ np.svar.default <- function(x, y, h = NULL, maxlag = NULL, nlags = NULL,
         stop("'degree' must be greater than or equal to 1 if 'drv == TRUE'")
     # Remove missing values
     ok <- complete.cases(x, y) # observations having no missing values across x and y
+    # ok <- !rowSums(!is.finite(x)) & is.finite(y)
+    # if (!all(ok)) {
+    #    warning("not finite values removed")
     if (any(!ok)) {
         warning("missing values removed")
         x <- x[ok,]
@@ -116,7 +120,7 @@ np.svar.default <- function(x, y, h = NULL, maxlag = NULL, nlags = NULL,
     if (is.null(maxlag)) 
         maxlag <- 0.55*sqrt(sum(diff(apply(x, 2, range))^2)) # 55% of largest lag
     if (is.null(nlags)) nlags <- 101      # dimension of the binning grid
-    if(is.null(h)) { 
+    if(is.null(h)) {
         stop("argument 'h' (bandwith) must be provided")
         # h <- 1                          # bandwith matrix PENDENTE
      } else if (!is.numeric(h) || length(h)!= 1L)
@@ -190,6 +194,7 @@ np.svariso.hcv <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nl
                   ncv = ifelse(objective == "GCV", 0, 1) , cov.bin = NULL, ...) { 
 #--------------------------------------------------------------------
     objective <- match.arg(objective)
+    if (is.null(nlags)) nlags <- 101       # dimension of the binning grid
     bin <- svariso(x, y, maxlag = maxlag, nlags = nlags, minlag = minlag, 
             estimator = "classical") 
     hopt <- h.cv.bin.data(bin, objective = objective, degree = degree, 
@@ -215,6 +220,7 @@ np.svariso.hcv <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nl
 #' Fernandez-Casal and Francisco-Fernandez (2014). This procedure tries to correct
 #' the bias due to the direct use of residuals (obtained in this case from a 
 #' nonparametric estimation of the trend function) in semivariogram estimation.
+# (additional arguments \code{...} are passed to \code{plot}).
 #' @references
 #' Fernandez-Casal R. and Francisco-Fernandez M. (2014) 
 #' Nonparametric bias-corrected variogram estimation under non-constant trend, 
@@ -246,7 +252,7 @@ np.svariso.corr <- function(lp, x = lp$data$x, h = NULL, maxlag = NULL, nlags = 
     hat.trend <- lpdat$y.hat
 
     svar <- np.svariso(x, lp.resid, h = h, maxlag = maxlag, nlags = nlags,  
-                      degree = degree, drv = drv, hat.bin = hat.bin)
+                      degree = degree, drv = FALSE, hat.bin = FALSE)
     sv.lags <- coords(svar)   
 
     if(plot) {
@@ -258,7 +264,7 @@ np.svariso.corr <- function(lp, x = lp$data$x, h = NULL, maxlag = NULL, nlags = 
 
     svar.biased <- svar$biny
     svarold <- 0
-    dists <- as.vector(dist(x))   # lower triangle of the distance matrix
+    dists <- c(0, dist(x))   # 0 + lower triangle of the distance matrix
     for (iter in 2:max.iter) {
     # iter <- 1; iter <- iter +1
 
@@ -271,13 +277,14 @@ np.svariso.corr <- function(lp, x = lp$data$x, h = NULL, maxlag = NULL, nlags = 
         svar.bias <- cov.bias.diag + rep(cov.bias.diag, each = ny) - cov.bias.est
         svar.bias <- svar.bias[lower.tri(svar.bias)]
 
-        tmp <- binning(dists, svar.bias, nbin = 2*svar$grid$n)
+        tmp <- binning(dists, c(0, svar.bias), nbin = 2*svar$grid$n)
         tmp <- approx(coords(tmp), tmp$biny, sv.lags)$y
         svar$biny <- svar.biased - tmp
         # if (hat.bin && !drv) svar$est <- svar$locpol$hat %*% svar$biny 
         svar <- locpol(svar, h = h,  
                       degree = degree, drv = drv, hat.bin = hat.bin)
-        # CUIDADO posible división por 0              
+        # COIDADO posible division por 0
+        # PENDENTE ponderar por num de saltos
         error <- sqrt(mean((svarold/svar$est - 1)^2, na.rm = TRUE))
         if(plot) {
             lines(sv.lags, svar$est, col =  col[iter])

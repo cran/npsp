@@ -8,16 +8,16 @@
 #       locpol.bin.den(x, h, degree, drv, ncv, ...) 
 #   locpolhcv(x, y, nbin, objective, degree, drv, ncv, cov, ...)  
 #
-#   (c) R. Fernandez-Casal
-#   Creation date: Aug 2012     Last revision: Aug 2013
+#   (c) Ruben Fernandez-Casal
+#   Created: Aug 2012                          Last changed: Aug 2015
 #--------------------------------------------------------------------
 # PENDENTE:
 #   - is.locpol.bin
 #   - update.locpol.bin
-#   - comprobar dimensiones parámetros: h, ncv
-#   - revisar h, opción multiplo espaciado/dimensión rejilla units.h=, h(i,i) < 0 ?)
+#   - comprobar dimensiones parametros: h, ncv
+#   - revisar h, opcion multiplo espaciado/dimension rejilla units.h=, h(i,i) < 0 ?)
 #   - DUP = FALSE en FORTRAN  (o .C y pasar interfaces a C?)
-#   - opción de ncv vector
+#   - opcion de ncv vector
 #--------------------------------------------------------------------
 
 
@@ -27,7 +27,7 @@
 #' Local polynomial estimation
 #' 
 #' Estimates a multidimensional regression function (and its first derivatives) 
-#' using local polynomial kernel smoothing of linearly binned data.
+#' using local polynomial kernel smoothing (and linear binning).
 #' @aliases locpol.bin-class locpol.bin
 #' @param  x 	a (data) object used to select a method.
 #' @param  ... 	further arguments passed to or from other methods (e.g. to \code{\link{hcv.data}}).
@@ -49,7 +49,8 @@
 # \item{deriv}{(\eqn{length(y) \times ndim}) matrix of first derivatives.} 
 #' @seealso \code{\link{binning}}, \code{\link{data.grid}}, 
 #' \code{\link{np.svariso}}, \code{\link{svar.bin}},
-#' \code{\link{np.den}}, \code{\link{bin.den}}, \code{\link{hcv.data}}.
+#' \code{\link{np.den}}, \code{\link{bin.den}}, \code{\link{hcv.data}},
+#' \code{\link{rule.binning}}.
 #' @export
 locpol <- function(x, ...) UseMethod("locpol")
 # S3 generic function locpol
@@ -63,7 +64,8 @@ locpol <- function(x, ...) UseMethod("locpol")
 #' @rdname locpol
 #' @method locpol default
 #' @param  y vector of data (response variable).
-#' @param  h (full) bandwidth matrix (controls the degree of smoothing). 
+#' @param  h (full) bandwidth matrix (controls the degree of smoothing;
+#' only the upper triangular part of h is used).
 #' @param  nbin vector with the number of bins on each dimension.
 #' @param  degree degree of the local polynomial used. Defaults to 1 (local linear estimation).
 #' @param  drv logical; if \code{TRUE}, the matrix of estimated first derivatives is returned.
@@ -71,12 +73,13 @@ locpol <- function(x, ...) UseMethod("locpol")
 #' @param  ncv integer; determines the number of cells leaved out in each dimension.
 #' Defaults to 0 (the full data is used) and it is not normally changed by the user
 #' in this setting. See "Details" below.
-#' @param  set.NA logical. If \code{TRUE}, sets binning cells without data to missing.
-#' @details Standard generic function with a default method (interface to the 
+#' @param  set.NA logical. If \code{TRUE}, sets the bin averages corresponding
+#' to cells without data to \code{NA}.
+#' @details Standard generic function with a default method (interface to the
 #' fortran routine \code{lp_raw}), in which argument \code{x} 
 #' is a vector or matrix of covariates (e.g. spatial coordinates).
 #'
-#' If parameter \code{nbin} is not specified is set to \code{rep(25, ncol(x))}. 
+#' If parameter \code{nbin} is not specified is set to \code{pmax(25, rule.binning(x))}.
 #'
 #' A multiplicative triweight kernel is used to compute the weights.
 #' 
@@ -117,8 +120,8 @@ locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(
 #
 # PENDENTE:
 #   - valor por defecto para h
-#   - comprobar parámetros: ncv
-#   - revisar h, opción multiplo espaciado/dimensión rejilla 
+#   - comprobar parametros: ncv
+#   - revisar h, opcion multiplo espaciado/dimension rejilla
 #     (defecto en fortran con valor negativo h(1,1)??)
 #   - eliminar (*) de fortran, fortran 2003
 #--------------------------------------------------------------------
@@ -138,6 +141,9 @@ locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(
         stop("'degree' must be greater than or equal to 1 if 'drv == TRUE'")
     # Remove missing values  
     ok <- complete.cases(x, y) # observations having no missing values across x and y
+    # ok <- !rowSums(!is.finite(x)) & is.finite(y)
+    # if (!all(ok)) {
+    #    warning("not finite values removed")
     if (any(!ok)) {
         warning("missing values removed")
         x <- x[ok,]
@@ -145,7 +151,7 @@ locpol.default <- function(x, y, h = NULL, nbin = NULL, degree = 1 + as.numeric(
         ny <- length(y)
     }    
     nd <- ncol(x)                                 # number of dimensions
-    if(is.null(nbin)) nbin <- rep(25L, nd) else   # dimensions of the binning grid
+    if(is.null(nbin)) nbin <- pmax(25L, rule.binning(x)) else   # dimensions of the binning grid
       if (nd != length(nbin))
         stop("arguments 'x' and 'nbin' have incompatible dimensions")
     if(is.null(h)) { 
@@ -336,7 +342,7 @@ locpol.bin.den <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALS
               ideriv = as.integer(drv), deriv = deriv, ihat = as.integer(0L), 
               hat = hat, ncv = as.integer(ncv), rm = double(1), rss = double(1), 
               nrl0 = integer(1), NAOK = TRUE, PACKAGE = "npsp")
-    # NOTA: se podría evitar el cálculo de sum(x$binw) (ojo con svar.bin)
+    # NOTA: podriase evitar o calculo de sum(x$binw) (ollo con svar.bin)
     # Construir o resultado
     ret$elp[ret$elp < 0] <- 0
     dim(ret$elp) <- if(nd > 1) nbin else NULL   
@@ -364,7 +370,7 @@ locpol.bin.den <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALS
 #--------------------------------------------------------------------
 # locpolhcv(x, y, nbin = NULL, objective = c("CV", "GCV", "MASE"),  
 #           degree = 1 + as.numeric(drv), drv = FALSE,
-#           ncv = ifelse(objective == "GCV", 0, 1) , cov = NULL, ...)  
+#           ncv = ifelse(objective == "CV", 2, 0), cov.dat = NULL, ...)  
 #--------------------------------------------------------------------
 #' @rdname locpol  
 #' @inheritParams hcv.data
@@ -376,16 +382,16 @@ locpol.bin.den <- function(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALS
 locpolhcv <- function(x, y, nbin = NULL, objective = c("CV", "GCV", "MASE"),  
                       degree = 1 + as.numeric(drv), drv = FALSE,
                       hat.bin = FALSE, set.NA = FALSE, 
-                      ncv = ifelse(objective == "GCV", 0, 1), cov = NULL, ...) { 
+                      ncv = ifelse(objective == "CV", 2, 0), cov.dat = NULL, ...) {
 #--------------------------------------------------------------------
     objective <- match.arg(objective)
     bin <- binning(x, y, nbin = nbin, set.NA = set.NA)
-    if(is.null(cov))
+    if(is.null(cov.dat))
         hopt <- h.cv.bin.data(bin, objective = objective, degree = degree, ncv = ncv, 
                   cov.bin = NULL, ...)$h
     else 
         hopt <- hcv.data(bin, objective = objective, degree = degree, ncv = ncv, 
-                  cov = cov, ...)$h       
+                  cov.dat = cov.dat, ...)$h
     return(locpol(bin, h = hopt, degree = degree, drv = drv, ncv = 0, 
         hat.bin = hat.bin))
 }                  

@@ -5,17 +5,20 @@
       SUBROUTINE DSYTRFI(N, A, AI, DET)
       IMPLICIT NONE
       INTEGER N
-      REAL*8  A(N,N), AI(N,N), DET
+      REAL(8)  A(N,N), AI(N,N), DET
 !     Variables locales
       INTEGER IPIV(N), LWORK, INFO, i
-      REAL*8 tmp
-      REAL*8, ALLOCATABLE ::  WORK(:)
+      REAL(8) tmp
+      REAL(8), ALLOCATABLE ::  WORK(:)
 !     ------------------------------------------------------------------
       AI = A
 !     Factorizar matriz
 !     DSYTRF computes the factorization of a real symmetric matrix A using
 !           the Bunch-Kaufman diagonal pivoting method.  The form of the
 !           factorization is A = U*D*U**T  or  A = L*D*L**T
+!     The leading N-by-N upper triangular part of A contains the upper
+!          triangular part of the matrix A, and the strictly lower
+!          triangular part of A is not referenced.
       LWORK = -1    ! Determine the block size
       CALL DSYTRF( 'U', N, AI, N, IPIV, tmp, LWORK, INFO )
       LWORK = NINT(tmp)

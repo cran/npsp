@@ -8,12 +8,12 @@
       IMPLICIT NONE
 !     Variables principales
       INTEGER LDXRL, NINDRL, NRL
-      REAL*8, ALLOCATABLE :: XRL(:,:), YRL(:), BRL(:)
+      REAL(8), ALLOCATABLE :: XRL(:,:), YRL(:), BRL(:)
 !     Variables secundarias
-      REAL*8  RCONDRL
+      REAL(8)  RCONDRL
       PARAMETER (RCONDRL = 1.0D-6)
       INTEGER RANKRL, LWKRL, INFORL
-      REAL*8, ALLOCATABLE :: HATRL(:,:), RRL(:,:), WKRL(:)
+      REAL(8), ALLOCATABLE :: HATRL(:,:), RRL(:,:), WKRL(:)
       INTEGER, ALLOCATABLE :: JPVTRL(:)
 !
       LOGICAL ModRegLinIni   !Modulo inicializado
@@ -71,7 +71,7 @@
 !         [ModRegLinRL]   Regresión lineal
 !         --------------------------------------------------------------
           SUBROUTINE ModRegLinRL
-          REAL*8, EXTERNAL :: DDOT
+          REAL(8), EXTERNAL :: DDOT
 !         --------------------------------------------------------------
 !         Generar error si NRL <  NINDRL
           IF( NRL <  NINDRL ) CALL Error(1, 'ModRegLinRL: NRL <  NINDRL') 
@@ -96,7 +96,7 @@
 !                     polinómico local correspondiente a la última regresión lineal
 !         --------------------------------------------------------------
           SUBROUTINE GetVHatLP(VHAT)
-          REAL*8  VHAT(NRL)
+          REAL(8)  VHAT(NRL)
 !         Variables locales
           INTEGER i
 !         --------------------------------------------------------------
@@ -133,7 +133,7 @@
       USE linreg_module
       IMPLICIT NONE
       INTEGER LDX, NIND, N, INFO, i
-      REAL*8  X(LDX,NIND), Y(N), B(NIND)
+      REAL(8)  X(LDX,NIND), Y(N), B(NIND)
 !     ------------------------------------------------------------------
 !     Establecer valores
       CALL ModRegLinInit(N, NIND)

@@ -1,10 +1,11 @@
-PKG_LIBS=${LAPACK_LIBS} $(BLAS_LIBS) ${FLIBS}
+PKG_LIBS = ${LAPACK_LIBS} $(BLAS_LIBS) ${FLIBS}
 
 ## DEBUG
 #PKG_CFLAGS = -g -O0 -std=gnu99 -Wall -pedantic
 #PKG_CXXFLAGS = -g -O0 -std=gnu99 -Wall -pedantic
-#PKG_FFLAGS = -g -O0 -Wall 
 #PKG_FCFLAGS = -g -O0 -Wall
+#PKG_FFLAGS = ${FFLAGS} -Wall -pedantic
+#PKG_FCFLAGS = ${FCFLAGS} -Wall -pedantic
 #COPTFLAG=-O0
 #CXXOPTFLAG=-O0
 #FOPTFLAGS=-O0
@@ -13,7 +14,9 @@ PKG_LIBS=${LAPACK_LIBS} $(BLAS_LIBS) ${FLIBS}
 
 all: $(SHLIB)
 
-dsytrfi.o besselzeros.o: err_module.o
+besselzeros.o: tql2.o err_module.o
+
+dsytrfi.o: err_module.o
 
 linreg_module.o: dgelsyr.o err_module.o
 

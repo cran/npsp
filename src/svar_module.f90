@@ -32,10 +32,10 @@
     implicit none
     type(grid_bin) :: g
     integer nd, ny, nlags, itipo
-    real*8  x(nd,ny), y(ny), minlag, maxlag, lag
+    real(8)  x(nd,ny), y(ny), minlag, maxlag, lag
     integer ib, i, j
-    real*8  wl, wr, tmp
-    real*8, external :: DNRM2   ! DNRM2(N,X,INCX)
+    real(8)  wl, wr, tmp
+    real(8), external :: DNRM2   ! DNRM2(N,X,INCX)
 !   --------------------------------------------------------------------
         if (minlag < 0) minlag = maxlag/nlags
 !       Establecer rejilla binning
@@ -106,11 +106,11 @@
     use grid_module
     implicit none
     integer nd, ny, nlags, ndelcv, degree, ideriv, ihat, nrl0
-    real*8  x(nd,ny), y(ny), minlag, maxlag
-    real*8  bin_lag, bin_med, bin_y(nlags), bin_w(nlags)
-    real*8  h, lpe(nlags), rm, rss, deriv(nlags), hatlp(nlags,nlags)
+    real(8)  x(nd,ny), y(ny), minlag, maxlag
+    real(8)  bin_lag, bin_med, bin_y(nlags), bin_w(nlags)
+    real(8)  h, lpe(nlags), rm, rss, deriv(nlags), hatlp(nlags,nlags)
     type(grid_bin) :: bin
-    REAL*8, EXTERNAL :: KTWMD
+    real(8), EXTERNAL :: KTWMD
 !   --------------------------------------------------------------------
 !       subroutine set_bin_svar_iso(g, nd, x, ny, y, nlags, minlag, maxlag, itipo)
         call set_bin_svar_iso(bin, nd, x, ny, y, nlags, minlag, maxlag, 0)    ! Establece la rejilla binning (lineal)
@@ -149,9 +149,9 @@
     use grid_module
     implicit none
     integer nd, ny, nlags, itipo
-    real*8  x(nd,ny), y(ny), minlag, maxlag
+    real(8)  x(nd,ny), y(ny), minlag, maxlag
     type(grid_bin) :: bin
-    real*8  bin_lag, bin_med, bin_y(nlags), bin_w(nlags)
+    real(8)  bin_lag, bin_med, bin_y(nlags), bin_w(nlags)
         call set_bin_svar_iso(bin, nd, x, ny, y, nlags, minlag, maxlag, itipo)    ! Establece la rejilla binning (lineal)
         bin_lag = bin%lag(1)
         bin_med = bin%med

@@ -59,8 +59,12 @@
 #' @aliases npsp
 #' @docType package
 #' @useDynLib npsp
-#' @import graphics
 #' @importFrom quadprog solve.QP
+#' @import graphics
+#' @importFrom grDevices colorRamp colorRamp rainbow rgb
+#' @importFrom methods is
+#' @importFrom stats approx complete.cases cov2cor dist optim predict
+#' @importFrom utils flush.console
 #' @keywords nonparametric smooth
 #' @references
 #' Fernandez-Casal R. and Francisco-Fernandez M. (2014) 

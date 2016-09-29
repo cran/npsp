@@ -53,13 +53,13 @@
             integer ndim, ngrid, igrid
             integer, allocatable :: n(:), ii(:)
 !           n(g%ndim) = NBM(1..NDimBM)= Nº nodos de la rejilla binning
-            real*8, allocatable :: min(:), max(:), lag(:)
+            real(8), allocatable :: min(:), max(:), lag(:)
 !       type, extends(grid) :: grid_den
             integer ny    !NBMc
-            real*8, allocatable :: w(:)
+            real(8), allocatable :: w(:)
 !       type, extends(grid_den) :: grid_bin
-            real*8 :: med
-            real*8, allocatable :: y(:)
+            real(8) :: med
+            real(8), allocatable :: y(:)
         end type
 
 !   --------------------------------------------------------------------
@@ -74,7 +74,7 @@
         implicit none
         type(grid_bin) :: g
         integer ndim, n(ndim)
-        real*8 min(ndim), max(ndim)
+        real(8) min(ndim), max(ndim)
 !       ----------------------------------------------------------------
             g%ndim = ndim
             allocate(g%n(ndim), g%ii(ndim), g%min(ndim), g%max(ndim), g%lag(ndim))
@@ -95,7 +95,7 @@
         implicit none
         type(grid_bin) :: g
         integer n
-        real*8 min, max
+        real(8) min, max
 !       ----------------------------------------------------------------
             g%ndim = 1
             allocate(g%n(1), g%ii(1), g%min(1), g%max(1), g%lag(1))
@@ -183,12 +183,12 @@
         implicit none
         type(grid_bin) :: g
         integer nd, nbin(nd), ny
-        real*8  x(nd,ny)
+        real(8)  x(nd,ny)
 !
         integer ii(nd), iib(nd), ib, i, j, k
-        real*8  minx(nd), maxx(nd), w(2,nd), tmp
+        real(8)  minx(nd), maxx(nd), w(2,nd), tmp
         integer niinc, iinc(nd, 2**nd)
-!       real*8, external :: dmach
+!       real(8), external :: dmach
 !           ------------------------------------------------------------
 !           Calcular dimensiones rejilla binning
             minx = x(1:nd, 1)
@@ -272,12 +272,12 @@
         implicit none
         type(grid_bin) :: g
         integer nd, nbin(nd), ny
-        real*8  x(nd,ny), y(ny)
+        real(8)  x(nd,ny), y(ny)
 !
         integer ii(nd), iib(nd), ib, i, j, k
-        real*8  minx(nd), maxx(nd), w(2,nd), tmp
+        real(8)  minx(nd), maxx(nd), w(2,nd), tmp
         integer niinc, iinc(nd, 2**nd)
-!       real*8, external :: dmach
+!       real(8), external :: dmach
 !           ------------------------------------------------------------
 !           Calcular dimensiones rejilla binning
             minx = x(1:nd, 1)
@@ -380,8 +380,8 @@
     use grid_module
     implicit none
     integer nd, nbin(nd), ny
-    real*8  x(nd,ny), y(ny)
-    real*8  bin_min(nd), bin_max(nd), bin_med, bin_y(*), bin_w(*)
+    real(8)  x(nd,ny), y(ny)
+    real(8)  bin_min(nd), bin_max(nd), bin_med, bin_y(*), bin_w(*)
     type(grid_bin) :: bin
 !       call bin%set_bin(nd, nbin, x, ny, y) ! Establece la rejilla binning (lineal)
         call set_grid_bin(bin, nd, nbin, x, ny, y)
@@ -407,8 +407,8 @@
     use grid_module
     implicit none
     integer nd, nbin(nd), ny
-    real*8  x(nd,ny)
-    real*8  bin_min(nd), bin_max(nd), bin_w(*)
+    real(8)  x(nd,ny)
+    real(8)  bin_min(nd), bin_max(nd), bin_w(*)
     type(grid_bin) :: bin
 !       call bin%set_bin_den(nd, nbin, x, ny) ! Establece la rejilla binning (lineal)
         call set_bin_den(bin, nd, nbin, x, ny)
@@ -433,9 +433,9 @@
     use grid_module
     implicit none
     integer nd, nbin(nd), ngrid, ny
-    real*8  bin_min(nd), bin_max(nd)
+    real(8)  bin_min(nd), bin_max(nd)
     type(grid_bin) :: g
-    real*8  x(nd,ny), gy(ngrid), y(ny)
+    real(8)  x(nd,ny), gy(ngrid), y(ny)
 !       ----------------------------------------------------------------
 !       Establecer la rejilla
 !       call g%set(nd, nbin, bin_min, bin_max)
@@ -459,10 +459,10 @@
     implicit none
     type(grid_bin) :: g
     integer ny
-    real*8  x(g%ndim, ny), gy(g%ngrid), y(ny)
+    real(8)  x(g%ndim, ny), gy(g%ngrid), y(ny)
 !
     integer nd, ii(g%ndim), iib(g%ndim), ib, i, j, k
-    real*8  w(2,g%ndim), tmp
+    real(8)  w(2,g%ndim), tmp
     integer niinc, iinc(g%ndim, 2**g%ndim)
 !       ------------------------------------------------------------
         nd = g%ndim

@@ -6,7 +6,8 @@
 #     persp.data.grid(x, data.ind, xlab, ylab, zlab, ...) 
 #     contour.data.grid(x, data.ind, filled, xlab, ylab, ...)
 #
-#   (c) R. Fernandez-Casal         Last revision: Mar 2014
+#   (c) Ruben Fernandez-Casal
+#   Created: Mar 2014                          Last changed:
 #--------------------------------------------------------------------
 # PENDENTE:
 #   - plot.data.grid
@@ -16,7 +17,7 @@
 #' @name rgraphics
 #' @title R Graphics for gridded data
 #' @description Draw an image, perspective, contour or filled contour plot for data
-#' on a bidimensional regular grid (S3 methods for class "code{\link{data.grid}}").
+#' on a bidimensional regular grid (S3 methods for class "\code{\link{data.grid}}").
 #' @seealso \code{\link{image}}, \code{\link{persp}}, \code{\link{contour}},
 #' \code{\link{filled.contour}}, \code{\link{data.grid}}.
 #' @examples
@@ -53,8 +54,8 @@ NULL
 #--------------------------------------------------------------------
 #' @rdname rgraphics
 #' @method image data.grid
-#' @param x a "code{\link{data.grid}}"-class object.
-#' @param data.ind integer or character with the index or name of the component
+#' @param x a "\code{\link{data.grid}}"-class object.
+#' @param data.ind integer or character with the index or name of the component 
 #' containing the values to be used for coloring the rectangles.
 #' @param xlab label for the x axis, defaults to \code{dimnames(x)[1]}.
 #' @param ylab label for the y axis, defaults to \code{dimnames(x)[2]}.

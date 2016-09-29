@@ -93,7 +93,7 @@ spoints <- function(x, ...) UseMethod("spoints")
 #' @export
 #--------------------------------------------------------------------
 spoints.default <- function(x, y = NULL, s, slim = range(s, finite = TRUE), col = jet.colors(128),
-    breaks = NULL, legend = TRUE, horizontal = FALSE, legend.shrink = 0.9,
+    breaks = NULL, legend = TRUE, horizontal = FALSE, legend.shrink = 1.0,
     legend.width = 1.2, legend.mar = ifelse(horizontal, 3.1, 5.1), legend.lab = NULL,
     bigplot = NULL, smallplot = NULL, lab.breaks = NULL, axis.args = NULL,
     legend.args = NULL, add = FALSE, graphics.reset = add,
@@ -105,7 +105,7 @@ spoints.default <- function(x, y = NULL, s, slim = range(s, finite = TRUE), col 
             legend.shrink = legend.shrink, legend.width = legend.width,
             legend.mar = legend.mar, legend.lab = legend.lab,
             bigplot = bigplot, smallplot = smallplot, lab.breaks = lab.breaks,
-            axis.args = axis.args, legend.args = legend.args)
+            axis.args = axis.args, legend.args = legend.args, add = add)
     else {
         old.par <- par(no.readonly = TRUE)
         # par(xpd = FALSE)
@@ -120,8 +120,8 @@ spoints.default <- function(x, y = NULL, s, slim = range(s, finite = TRUE), col 
     }
     icol <- cut(as.numeric(s), breaks, labels = FALSE, include.lowest = TRUE, right = FALSE) # Use .bincode instead of cut?
     if (!add) {
-        if (is.null(xlab)) xlab <- deparse(substitute(x))
-        if (is.null(ylab)) ylab <- if (!missing(y)) deparse(substitute(y)) else "Y"
+        # if (is.null(xlab)) xlab <- deparse(substitute(x))
+        # if (is.null(ylab)) ylab <- if (!missing(y)) deparse(substitute(y)) else "Y"
         plot(x, y, type = "p", pch = pch, cex = cex, col = col[icol], xlab = xlab, ylab = ylab, ...)
     } else {
         graphics.reset <- TRUE

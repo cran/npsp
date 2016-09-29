@@ -12,7 +12,8 @@
 #   University Corporation for Atmospheric Research
 #   Licensed under the GPL -- www.gpl.org/licenses/gpl.html
 #
-#   (c) R. Fernandez-Casal         Last revision: Mar 2014
+#   (c) Ruben Fernandez-Casal
+#   Created: Mar 2014                          Last changed: Aug 2014
 #--------------------------------------------------------------------
 
 
@@ -102,7 +103,7 @@ simage <- function(x, ...) UseMethod("simage")
 #--------------------------------------------------------------------
 simage.default <- function(x = seq(0, 1, len = nrow(s)), y = seq(0, 1, 
     len = ncol(s)), s, slim = range(s, finite = TRUE), col = jet.colors(128), 
-    breaks = NULL, legend = TRUE, horizontal = FALSE, legend.shrink = 0.8, 
+    breaks = NULL, legend = TRUE, horizontal = FALSE, legend.shrink = 1.0,
     legend.width = 1.2, legend.mar = ifelse(horizontal, 3.1, 5.1), legend.lab = NULL,
     bigplot = NULL, smallplot = NULL, lab.breaks = NULL, axis.args = NULL, 
     legend.args = NULL, graphics.reset = FALSE, xlab = NULL, ylab = NULL,
@@ -199,13 +200,15 @@ simage.data.grid <- function(x, data.ind = 1, xlab = NULL, ylab = NULL, ...) {
 #' @param log logical; if \code{TRUE} (default), \code{log(x$est)} is ploted.
 #' @param contour logical; if \code{TRUE} (default), contour lines are added.
 #' @param points logical; if \code{TRUE} (default), points at \code{x$data$x} are drawn.
+#' @param tolerance tolerance value (lower values are masked).
 #' @export
 plot.np.den <- function(x, y = NULL, log = TRUE, contour = TRUE, points = TRUE, 
-                    col = hot.colors(128), ...){
+                    col = hot.colors(128), tolerance = npsp.tolerance(), ...){
 #    if (!inherits(x, "data.grid") | x$grid$nd != 2L)
 #        stop("function only works for two-dimensional gridded data ('data.grid'-class objects)")
+    is.na(x$est) <- x$est < tolerance
     if (log) x$est <- log(x$est)
-    ret <- simage(x, col = col, ...)
+    ret <- simage(x, col = col, ...)    # Comprueba x$grid$nd != 2L
     if (contour) contour(x, add = TRUE)
     if (points) points(x$data$x, pch = 21, bg = 'black', col = 'darkgray' )
     return(invisible(ret))

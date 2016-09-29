@@ -81,7 +81,7 @@ legend("bottomright", legend = c("NP estimates", "fitted model", 'uncorrected'),
 #------------------------------------------
 # Bandwidth selection and trend re-estimation?
 
-bin2 <- binning(aquifer[,1:2], aquifer$head, nbin = c(15,15)) # to speed computations... 
+bin2 <- binning(aquifer[,1:2], aquifer$head, nbin = c(15,15)) # to speed up computations... 
 
 h.cv(bin2, ncv = 2)   # ncv >= 2 is recommended for sparse data (when linear binning is used)
 

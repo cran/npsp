@@ -53,7 +53,7 @@ as.variogram.svar.bin <- function(x, ...) {
     result <- list()
     result$u <- as.numeric(coords(x))
     result$v <- x$biny
-    result$n <- x$binw # nº de aportaciones
+    result$n <- x$binw # num de aportaciones
     result$trend <- "cte"
     result$beta.ols <- x$data$med
     result$max.dist <- result$u[x$grid$n]
@@ -79,11 +79,11 @@ as.variogram.np.svar <- function(x, ...) {
     result <- as.variogram.svar.bin(x, ...)
     result$v <- x$est
     if (!is.null(x$locpol$hat)) {
-        # Aproximación varianza estilo Cressie (suponiendo independencia) para ajuste wls
+        # Aproximacion varianza estilo Cressie (suponiendo independencia) para ajuste wls
         # PENDIENTE: ESCRIBIR/REVISAR ESTAS CUENTAS
-        result$n <- with(x, rowSums(locpol$hat^2 / matrix(binw, nrow=grid$n, ncol=grid$n, byrow=TRUE)))
-        result$n <- 1/result$n    # nº equivalente de aportaciones
-    } # else result$n <- x$binw # nº de aportaciones
+        result$n <- 1 / with(x, rowSums(locpol$hat^2 /
+            pmax(matrix(binw, nrow=grid$n, ncol=grid$n, byrow=TRUE), 1))) # num equivalente de aportacions
+    } # else result$n <- x$binw # num de aportacions
     return(result)
 } # as.variogram.svar.bin
 
@@ -120,11 +120,9 @@ as.variomodel.svarmod <- function(m, ...){
         stop("argument 'm' must be of class (or extending) 'svarmod'.")
     tmp <- match(m$model, svarmodels("isotropic"), nomatch = 0)
     if (m$type != "isotropic" || !tmp || tmp > 8)
-        stop("variogram model not supported by 'geoR'.")                
-    res$cov.model <- m$model
-    res$cov.pars <- m$par[1:2]
-    res$nugget <- m$nugget  # par[3]
-    res$kappa <- m$par[4]       
+        stop("variogram model not supported by 'geoR'.")
+    res <- list(cov.model = m$model, cov.pars = m$par[1:2], nugget = m$nugget,
+        kappa = m$par[4])
     oldClass(res) <- c("variomodel")
     return(res)
 }    

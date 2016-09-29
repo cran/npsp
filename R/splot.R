@@ -14,7 +14,8 @@
 #   University Corporation for Atmospheric Research
 #   Licensed under the GPL -- www.gpl.org/licenses/gpl.html
 #
-#   (c) R. Fernandez-Casal         Last revision: Mar 2014
+#   (c) Ruben Fernandez-Casal
+#   Created: Mar 2014                          Last changed:
 #--------------------------------------------------------------------
 
 
@@ -240,6 +241,7 @@ splot <- function(slim = c(0,1), col = jet.colors(128), breaks = NULL,
 }   # splot
 
 
+#' @rdname npsp-internals
 #' @keywords internal
 #--------------------------------------------------------------------
 # Based on image.plot.plt function from package fields:

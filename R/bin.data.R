@@ -4,11 +4,12 @@
 #   bin.data  S3 class and methods
 #   binning(x, y, nbin, set.NA)
 #
+#   (c) R. Fernandez-Casal
+#   Created: Aug 2012                          Last changed: Aug 2015
+#--------------------------------------------------------------------
 # PENDENTE:
 #   - as.bin.data.data.grid, as.bin.data.default, ...
 #   - ndim() ?
-#
-#   (c) R. Fernandez-Casal         Last revision: Aug 2012
 #--------------------------------------------------------------------
 
 
@@ -26,8 +27,9 @@
 #' Columns correspond with covariates (coordinate dimension) and rows with data.
 #' @param  y vector of data (response variable).
 #' @param  nbin vector with the number of bins on each dimension.
-#' @param  set.NA logical. If \code{TRUE}, sets binning cells without data to missing.
-#' @details If parameter \code{nbin} is not specified is set to \code{rep(25, ncol(x))}.
+#' @param  set.NA logical. If \code{TRUE}, sets the bin averages corresponding
+#' to cells without data to \code{NA}.
+#' @details If parameter \code{nbin} is not specified is set to \code{pmax(25, rule.binning(x))}.
 #' 
 #' Setting \code{set.NA = TRUE} (equivalent to \code{biny[binw == 0] <- NA}) 
 #' may be useful for plotting the binned averages \code{$biny}
@@ -77,7 +79,8 @@ binning <- function(x, y = NULL, nbin = NULL, set.NA = FALSE) {
     x <- as.matrix(x)
     if ( !identical(ny, nrow(x)) )
       stop("arguments 'y' and 'x' do not have the same length.")
-    # Remove missing values  
+    # Remove missing values 
+    # NA/NaN/Inf?     
     ok <- complete.cases(x, y) # observations having no missing values across x and y
     if (any(!ok)) {
         warning("missing values removed")
@@ -86,10 +89,10 @@ binning <- function(x, y = NULL, nbin = NULL, set.NA = FALSE) {
         ny <- length(y)
     }    
     nd <- ncol(x)                                 # number of dimensions
-    if(is.null(nbin)) nbin <- rep(25,nd) else     # dimensions of the binning grid
-      #  if (!identical(nd, length(nbin)))        # Cuidado con double e integer (nd <- 1L)
-      if (nd != length(nbin))
-        stop("arguments 'x' and 'nbin' have incompatible dimensions.")
+    if(is.null(nbin)) nbin <- pmax(25, rule.binning(x)) else     # dimensions of the binning grid
+        if (nd != length(nbin)) stop("arguments 'x' and 'nbin' have incompatible dimensions.")
+        #  if (!identical(nd, length(nbin)))      # Cuidado con double e integer (nd <- 1L)
+
     nt <- prod(nbin)
     # Let's go FORTRAN!
     #   subroutine binning( nd, nbin, x, ny, y, bin_min, bin_max, bin_med, bin_y, bin_w)
@@ -137,11 +140,14 @@ as.bin.data.data.grid <- function(object, data.ind = 1, weights.ind = NULL, ...)
     if (!inherits(object, "data.grid"))
         stop("function only works for objects of class (or extending) 'data.grid'")
     y <- object[[data.ind]]
-    x <- coords(object$grid)        
-    binw <- if (!is.null(weights.ind))  
-        object[[weights.ind]] else rep(1, prod(object$grid$n)) # pending: check missing values       
-    if (!all(index <- is.finite(y))) {
-        binw <- as.numeric(index) * binw
+    x <- coords(object$grid)
+    index <- is.finite(y) 
+    binw <- as.numeric(index) 
+    if (!is.null(weights.ind)) {
+        binw <- binw * object[[weights.ind]] 
+        index <- binw > 0
+    }     
+    if (!all(index)) {
         x <- x[index, ]
         y <- y[index]
     }    
@@ -150,3 +156,22 @@ as.bin.data.data.grid <- function(object, data.ind = 1, weights.ind = NULL, ...)
     oldClass(result) <- c("bin.data", "bin.den", "data.grid")
     return(result)
 }
+
+
+#--------------------------------------------------------------------
+#' @rdname binning
+#' @method as.bin.data bin.data
+#' @export
+as.bin.data.bin.data <- function(object, ...) {
+  #--------------------------------------------------------------------
+  if (inherits(object, "svar.bin")) {
+    warning("Conversion not yet implemented; using 'as.bin.data.data.grid()'...")
+    return(as.bin.data.data.grid(object, data.ind = 'biny', weights.ind = 'binw'))
+  }  
+  result <- with( object, list(biny = biny, binw = binw, grid = grid, data = data))
+  if (!is.null(object$mask))  result$mask <- object$mask              
+  oldClass(result) <- c("bin.data", "bin.den", "data.grid")
+  return(result)
+}
+
+

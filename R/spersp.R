@@ -159,9 +159,12 @@ spersp.default <- function(x = seq(0, 1, len = nrow(z)), y = seq(0, 1,
             deparse(substitute(z))
         else "Z"
     if (!is.matrix(z))
-        if (missing(x) | missing(y)) stop("argument 'z' must be a matrix")
-        else dim(z) <- c(length(x), length(y)) 
-
+        if (missing(x) | missing(y)) 
+          stop("argument 'z' must be a matrix")
+        else {
+          dim(z) <- c(length(x), length(y))
+          if (!missing(s)) dim(s) <- dim(z)
+        } 
     if (!missing(s) & !identical(dim(z), dim(s)))
               stop("'s' matrix dimensions must match 'z'")
     # do average before? (now analogous to 'drape.plot'...)

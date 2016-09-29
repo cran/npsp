@@ -16,6 +16,6 @@
     packageStartupMessage( 
       paste(" Package npsp:", pkg.info["Title"], "\n"),
       paste(" version ", pkg.info["Version"], " (built on ", pkg.info["Date"], ").\n", sep=""),
-      " Copyright R. Fernandez-Casal 2012-2014.\n",      
+      " Copyright R. Fernandez-Casal 2012-2016.\n",
       " Type demo(package = 'npsp') to obtain the list of available demos.\n")
 }

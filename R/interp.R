@@ -4,7 +4,11 @@
 #   interp()    S3 generic
 #       interp.grid.par(object, data, newx, ...)
 #       interp.data.grid(object, data.ind, newx, ...)
-#       predict.locpol.bin(object, newx, hat.data, ...)
+#   predict.locpol.bin(object, newx, hat.data, ...)
+#   residuals.locpol.bin(object, ...)
+#
+#   (c) Ruben Fernandez-Casal
+#   Created: Oct 2012                          Last changed: Jan 2016
 #--------------------------------------------------------------------
 
 
@@ -53,7 +57,7 @@ interp.grid.par <- function(object, data, newx, ...) {
 # \code{interp} methods are interfaces to the fortran routine "interp_data_grid" (grid_module.f90)
 #--------------------------------------------------------------------
 #   PENDENTE: FALLA CON DATOS MISSING
-#   Determinar valores newx que están dentro de cuadriculas con datos
+#   Determinar valores newx que estan dentro de cuadriculas con datos
 #   Asignar NA si se pretende extrapolar      
 #--------------------------------------------------------------------
     if (!inherits(object, "grid.par"))
@@ -111,9 +115,11 @@ interp.data.grid <- function(object, data.ind = 1, newx, ...) {
 predict.locpol.bin <- function(object, newx = NULL, hat.data = FALSE, ...) {
 #--------------------------------------------------------------------
     if (!inherits(object, "locpol.bin"))
-      stop("function only works for objects of class (or extending) 'locpol.bin'")
-#    if(any(is.na(object$est))) 
+        stop("function only works for objects of class (or extending) 'locpol.bin'")
+#    if(any(is.na(object$est)))
 #        stop("binning estimates with missing values")
+    if (!is.null(object$mask) && with(object, any(index <- !mask & (binw > 0)))
+        && any(is.na(object$est[index]))) stop("data was masked.")
     hat.data <- as.logical(hat.data)
     if (!is.null(newx)) {
         if (hat.data) warning("argument 'hat.data' ignored ('newx != NULL')")
@@ -154,4 +160,14 @@ residuals.locpol.bin <- function(object, ...) {
     if (!inherits(object, "locpol.bin"))
       stop("function only works for objects of class (or extending) 'locpol.bin'")
     return(object$data$y - predict(object))
+}#--------------------------------------------------------------------
+
+
+#--------------------------------------------------------------------
+#' @rdname interp
+#' @method predict np.den
+#' @export
+predict.np.den <- function(object, newx  = NULL, ...) {
+    if (is.null(newx)) newx <- object$data$x
+    return(interp(object, data.ind = 'est', newx = newx)$y)
 }#--------------------------------------------------------------------

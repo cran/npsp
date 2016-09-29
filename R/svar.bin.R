@@ -5,7 +5,7 @@
 #       svar.bin.default(x, y, maxlag, nlags, minlag, estimator, ...)   
 #   svariso(x, y, maxlag, nlags, minlag, estimator, ...)   
 #
-#   (c) R. Fernandez-Casal         Last revision: Aug 2012
+#   (c) R. Fernandez-Casal         Last revision: Aug 2012, Nov 2015
 #--------------------------------------------------------------------
 # PENDENTE:
 #   - S3 generic ?
@@ -18,7 +18,7 @@
 #' Linear binning of semivariances
 #' 
 #' Creates a \code{svar.bin} (binned semivar. + grid parameters) object with 
-#' linearly binned semivariances.
+#' linearly binned semivariances (i.e. computes a binned sample variogram).
 #'
 #' @aliases svar.bin-class
 #' @param  x 	object used to select a method. Usually a matrix with the 
@@ -27,8 +27,9 @@
 #' @param  ... 	further arguments passed to or from other methods.
 #' @details  Currently, only isotropic semivariogram estimation is supported.
 #' 
-#' If parameter \code{nlags} is not specified is set to \code{101}.
-#' @return Returns an S3 object of class \code{svar.bin} (extends \code{\link{bin.data}}), 
+# If parameter \code{nlags} is not specified is set to \code{101}.
+#' If parameter \code{nlags} is not specified is set to \code{max(12, \link{rule.svar}(x))}.
+#' @return Returns an S3 object of class \code{svar.bin} (extends \code{\link{bin.data}}),
 #'    a \code{\link{data.grid}} object with the following 4 components:
 #' \item{biny}{array (dimension \code{nlags}) with the binned semivariances. }
 #' \item{binw}{array (dimension \code{nlags}) with the bin counts (weights).}
@@ -45,7 +46,8 @@
 #'    \item{\code{estimator} character, estimator name (e.g. "classical").}
 #' }}
 #' @seealso \code{\link{np.svariso}}, \code{\link{np.svar}}, 
-#' \code{\link{data.grid}}, \code{\link{binning}}, \code{\link{locpol}}.
+#' \code{\link{data.grid}}, \code{\link{binning}}, \code{\link{locpol}},
+#' \code{\link{rule.svar}}.
 #' @export
 svar.bin <- function(x, ...) UseMethod("svar.bin")
 # S3 generic function svar.bin
@@ -55,6 +57,7 @@ svar.bin <- function(x, ...) UseMethod("svar.bin")
 #' @rdname svar.bin
 #' @aliases svar.bin.default iso.svar svariso
 #' @inheritParams np.svar.default
+#' @param  nlags number of lags. Defaults to \code{max(12, \link{rule.svar}(x))}.
 #' @param estimator character, estimator name (e.g. "classical"). See "Details" below.
 #' @method svar.bin default
 #' @export
@@ -63,8 +66,8 @@ svar.bin.default <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/
 # Returns an S3 object of class "svar.bin" (extends "bin.data")
 # Interface to the fortran routine "set_bin"
 #
-#   Devuelve la rejilla binning (lineal) para la estimación np de un semivariograma isotrópico
-#   Se puede emplear para estimación clásica/robusta
+#   Devuelve la rejilla binning (lineal) para la estimacion np de un semivariograma isotropico
+#   Se puede emplear para estimacion clasica/robusta
 #--------------------------------------------------------------------
     y <- as.numeric(y)
     ny <- length(y)                       # number of data
@@ -82,7 +85,8 @@ svar.bin.default <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/
     nd <- ncol(x)                         # number of dimensions
     if (is.null(maxlag)) 
         maxlag <- 0.55*sqrt(sum(diff(apply(x, 2, range))^2)) # 55% of largest lag
-    if (is.null(nlags)) nlags <- 101      # dimension of the binning grid
+#    if (is.null(nlags)) nlags <- 101      # dimension of the binning grid
+    if (is.null(nlags)) nlags <- max(12, rule.svar(x))       # dimension of the binning grid
     estimator <- match.arg(estimator)
     itipo <- ifelse(estimator == "modulus", 2, 0)
     # Let's go FORTRAN!
@@ -90,7 +94,7 @@ svar.bin.default <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/
     #                           bin_lag, bin_med, bin_y, bin_w)
     # itipo   = Tipo de estimador a calcular
     #       0 = promedio de las diferencias al cuadrado 
-    #           (equivalente al estimador clásico)
+    #           (equivalente al estimador clasico)
     #       2 = reescalado del promedio de las diferencias absolutas  
     #           (equivalente al estimador robusto)
     ret <-.Fortran("svar_iso_bin", nd = as.integer(nd), x = as.double(t(x)), 

@@ -7,7 +7,10 @@
 # CPU time utilities
 #   Call cpu.time(restart = TRUE) where you want to start counting.
 #   Call cpu.time() to print/get total and/or partial (since the last call 
-#   to this function) real and CPU times .
+#   to this function) real and CPU times.
+#
+#   PENDENTE:
+#   - cat solo de ... si presente?
 #--------------------------------------------------------------------
 
 #--------------------------------------------------------------------
@@ -63,7 +66,7 @@
 #' @seealso
 #' \code{\link{proc.time}}, \code{\link{system.time}}, \code{\link{flush.console}}.
 #' @examples
-#' ## Not run:
+#' \dontrun{
 #'  
 #'  cpu.time(reset=TRUE)
 #'  res <- median(runif(100000))
@@ -71,7 +74,7 @@
 #'  res <- median(runif(1000))
 #'  cpu.time('\nSample median of', 1000, 'values =', res)
 #' 
-#' ## End(Not run) 
+#' }
 #' @export
 cpu.time <- .cpu.time.ini()
 
