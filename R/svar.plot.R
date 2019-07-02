@@ -1,5 +1,5 @@
 #--------------------------------------------------------------------
-#   npsp-plot.R (npsp package)
+#   svar.plot.R (npsp package)
 #   S3 and S4 plot methods for npsp-objects
 #--------------------------------------------------------------------
 #   svar.plot S3 plot methods
@@ -8,7 +8,7 @@
 #     plot.np.svar(x, y, xlab, ylab, ylim, add, ...)
 #
 #   (c) Ruben Fernandez-Casal
-#   Created: Aug 2014                          Last changed:
+#   Created: Aug 2014                          Last changed: May 2017
 #--------------------------------------------------------------------
 # PENDENTE:
 #   - @examples
@@ -43,7 +43,7 @@ plot.fitsvar <- function(x, y = NULL, legend = TRUE, xlab = "distance", ylab = "
     if (!inherits(x, "isotropic"))
       stop("function only works for isotropic variograms.")
     if (add)   
-        with(x$fit, lines(u, fitted.sv, ... ))
+        with(x$fit, lines(u, fitted.sv, lwd = lwd, ... ))
     else {
         with(x$fit, plot(u, sv, xlab = xlab, ylab = ylab, ylim = ylim, lwd = lwd[1], ...))
         with(x$fit, lines(u, fitted.sv, lwd = lwd[2]))

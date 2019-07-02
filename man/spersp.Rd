@@ -2,21 +2,21 @@
 % Please edit documentation in R/spersp.R
 \name{spersp}
 \alias{spersp}
-\alias{spersp.data.grid}
 \alias{spersp.default}
+\alias{spersp.data.grid}
 \title{Perspective plot with a color scale}
 \usage{
 spersp(x, ...)
 
-\method{spersp}{default}(x = seq(0, 1, len = nrow(z)), y = seq(0, 1, len =
-  ncol(z)), z, s = z, slim = range(s, finite = TRUE),
+\method{spersp}{default}(x = seq(0, 1, len = nrow(z)), y = seq(0, 1,
+  len = ncol(z)), z, s = z, slim = range(s, finite = TRUE),
   col = jet.colors(128), breaks = NULL, legend = TRUE,
   horizontal = FALSE, legend.shrink = 0.8, legend.width = 1.2,
   legend.mar = ifelse(horizontal, 3.1, 5.1), legend.lab = NULL,
-  bigplot = NULL, smallplot = NULL, lab.breaks = NULL, axis.args = NULL,
-  legend.args = NULL, graphics.reset = FALSE, xlab = NULL, ylab = NULL,
-  zlab = NULL, theta = 40, phi = 20, ticktype = "detailed",
-  cex.axis = 0.75, ...)
+  bigplot = NULL, smallplot = NULL, lab.breaks = NULL,
+  axis.args = NULL, legend.args = NULL, graphics.reset = FALSE,
+  xlab = NULL, ylab = NULL, zlab = NULL, theta = 40, phi = 20,
+  ticktype = "detailed", cex.axis = 0.75, ...)
 
 \method{spersp}{data.grid}(x, data.ind = 1, s = x[[data.ind]],
   xlab = NULL, ylab = NULL, zlab = NULL, ...)
@@ -107,7 +107,7 @@ to indicate direction of increase; \code{"detailed"} draws normal ticks as per 2
 \item{cex.axis}{magnification to be used for axis annotation (relative to the 
 current setting of \code{\link{par}("cex")}).}
 
-\item{data.ind}{integer or character with the index or name of the component 
+\item{data.ind}{integer (or character) with the index (or name) of the component 
 containing the \code{z} values to be plotted.}
 }
 \value{
@@ -132,6 +132,7 @@ and (optionally) adds a legend strip with the color scale
 (\code{\link{par}("plt")}) to make it possible to add more features to the plot
 (set \code{graphics.reset = FALSE} to avoid this).
 }
+
 \examples{
 
 #
@@ -155,6 +156,11 @@ spersp( x1, x2, y, main = 'Data')
 spersp(lp, main = 'Estimated trend', zlab = 'y')
 par(old.par)
 }
+\seealso{
+\code{\link{splot}}, \code{\link{spoints}}, \code{\link{simage}}, 
+\code{\link{image}}, \code{\link[fields]{image.plot}}, \code{\link{data.grid}}, 
+\code{\link{persp}}.
+}
 \author{
 Based on \code{\link[fields]{image.plot}} function from package \pkg{fields}:
 fields, Tools for spatial data. 
@@ -163,10 +169,4 @@ University Corporation for Atmospheric Research.
 
 Modified by Ruben Fernandez-Casal <rubenfcasal@gmail.com>.
 }
-\seealso{
-\code{\link{splot}}, \code{\link{spoints}}, \code{\link{simage}}, 
-\code{\link{image}}, \code{\link[fields]{image.plot}}, \code{\link{data.grid}}, 
-\code{\link{persp}}.
-}
 \keyword{hplot}
-

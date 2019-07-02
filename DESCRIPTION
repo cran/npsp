@@ -1,23 +1,30 @@
 Package: npsp
 Type: Package
 Title: Nonparametric Spatial Statistics
-Version: 0.5-3
-Date: 2016-09-28
-Author: Ruben Fernandez-Casal
+Version: 0.7-5
+Date: 2019-06-29
+Authors@R: person("Ruben", "Fernandez-Casal", , "rubenfcasal@gmail.com", role = c("aut", "cre"), 
+    comment = c(ORCID = "0000-0002-5785-3739"))
 Maintainer: Ruben Fernandez-Casal <rubenfcasal@gmail.com>
 Depends: R (>= 2.14.0), graphics
-Imports: quadprog, methods
-Suggests: sp, gstat, geoR, fields, DEoptim
+Imports: sp, methods, quadprog, spam
+Suggests: gstat, geoR, fields, DEoptim, knitr
 Description: Multidimensional nonparametric spatio-temporal (geo)statistics.
     S3 classes and methods for multidimensional: linear binning,
     local polynomial kernel regression, density and variogram estimation.
-    Nonparametric methods for trend and variogram inference.
+    Nonparametric methods for simultaneous inference on both spatial trend
+    and variogram functions (for spatial processes).
+    Nonparametric residual kriging (spatial prediction).
 License: GPL (>= 2)
 URL: http://github.com/rubenfcasal/npsp
 BugReports: http://github.com/rubenfcasal/npsp/issues
 LazyData: yes
-RoxygenNote: 5.0.1
+Encoding: UTF-8
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
 NeedsCompilation: yes
-Packaged: 2016-09-28 22:54:13 UTC; xubuntu
+Packaged: 2019-06-29 17:14:40 UTC; ruben
+Author: Ruben Fernandez-Casal [aut, cre]
+    (<https://orcid.org/0000-0002-5785-3739>)
 Repository: CRAN
-Date/Publication: 2016-09-29 08:02:38
+Date/Publication: 2019-07-02 06:50:06 UTC

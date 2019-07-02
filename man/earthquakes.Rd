@@ -15,7 +15,7 @@
 }}
 \source{
 National Geographic Institute (IGN) of Spain: \cr
-\url{http://www.ign.es/ign/layout/sismologiaObtencionDatosSismiscos.do}.
+\url{https://www.ign.es/web/ign/portal/sis-area-sismicidad}.
 }
 \description{
 The data set consists of 1859 earthquakes (with magnitude above or equal to
@@ -35,4 +35,3 @@ Francisco-Fernandez M., Quintela-del-Rio A. and Fernandez-Casal R. (2012)
    events, \emph{Environmetrics}, \bold{23}, 85-93.
 }
 \keyword{datasets}
-

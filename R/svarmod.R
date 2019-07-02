@@ -5,7 +5,7 @@
 #       svarmod(model, type, par, nugget, sill, range)
 #       svarmod.sb.iso(dk, x, z, nu, range, sill)
 #   svarmodels(type)
-#   svm  S3 generic
+#   sv  S3 generic
 #       sv.default(x, h, ...)
 #       sv.svarmod(x, h, ...)
 #       sv.sb.iso(x, h, ...)
@@ -164,24 +164,41 @@ sv.default <- function(x, h, ...) stop("Invalid variogram object")
 #' @rdname sv
 #' @method sv svarmod
 #' @export
-sv.svarmod <- function(x, h, ...) as.vgm.svarmod(x, h)$covtable
+sv.svarmod <- function(x, h, ...) stop("Not implemented for parametric variogram models")
+# as.vgm.svarmod(x, h)$covtable
 # variogramLine(as.vgm.svarmod(x), dist_vector = h)[[2]]
-# stop("Not defined (yet) for general variogram models")
 #--------------------------------------------------------------------
 
+
+#--------------------------------------------------------------------
+#' @rdname sv
+#' @method sv svar.grid
+#' @export
+sv.svar.grid <- function(x, h, ...) {
+  #------------------------------------------------------------------
+  if(missing(h)) 
+    stop("argument 'h' (spatial lags) must be provided")
+  xx <- drop(coords(x))
+  # if (x$log) xx <- 2^xx
+  if (x$log) h <- log2(h)
+  return(stats::approx(xx, drop(x$sv), h, yleft = 0, yright = x$sill)$y)
+}
 
 #--------------------------------------------------------------------
 #' @rdname sv  
 #' @method sv sb.iso
+#' @param  discretize logical. If \code{TRUE} the variogram is previously discretized. 
 #' @export
-sv.sb.iso <- function(x, h, ...) {
-# CUIDADO SI DIMENSIONES DE h GRANDE outer(h, x)
-#--------------------------------------------------------------------
-    result <- with(x$par,
-        drop(nu - kappasb(outer(h, x), dk) %*% z) )
-    result[h < 10 * .Machine$double.eps] <- 0
-    return(result)
+sv.sb.iso <- function(x, h, discretize = FALSE, ...) {
+  # CUIDADO SI DIMENSIONES DE h GRANDE y discretize = FALSE: outer(h, x)
+  #--------------------------------------------------------------------
+  if (discretize) 
+      return(sv.svar.grid(svar.grid(x, max = 1.1*max(h, na.rm = TRUE)), h))
+      # Evitar problema con max = 1.1*svar$range
+  result <- with(x$par,
+                 drop(nu - kappasb(outer(h, x), dk) %*% z) )
+  # result[h < 10 * .Machine$double.eps] <- 0
+  result[h < .Machine$double.eps] <- 0
+  return(result)
 }
-
-
 
