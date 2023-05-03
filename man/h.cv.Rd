@@ -10,23 +10,58 @@
 \usage{
 h.cv(bin, ...)
 
-\method{h.cv}{bin.data}(bin, objective = c("CV", "GCV", "MASE"),
-  h.start = NULL, h.lower = NULL, h.upper = NULL, degree = 1,
-  ncv = ifelse(objective == "CV", 2, 0), cov.bin = NULL,
-  DEalgorithm = FALSE, warn = TRUE, tol.mask = npsp.tolerance(2),
-  ...)
+\method{h.cv}{bin.data}(
+  bin,
+  objective = c("CV", "GCV", "MASE"),
+  h.start = NULL,
+  h.lower = NULL,
+  h.upper = NULL,
+  degree = 1,
+  ncv = ifelse(objective == "CV", 2, 0),
+  cov.bin = NULL,
+  DEalgorithm = FALSE,
+  warn = TRUE,
+  tol.mask = npsp.tolerance(2),
+  ...
+)
 
-\method{h.cv}{bin.den}(bin, h.start = NULL, h.lower = NULL,
-  h.upper = NULL, degree = 1, ncv = 2, DEalgorithm = FALSE, ...)
+\method{h.cv}{bin.den}(
+  bin,
+  h.start = NULL,
+  h.lower = NULL,
+  h.upper = NULL,
+  degree = 1,
+  ncv = 2,
+  DEalgorithm = FALSE,
+  ...
+)
 
-\method{h.cv}{svar.bin}(bin, loss = c("ARSE", "ARAE", "ASE", "AAE"),
-  h.start = NULL, h.lower = NULL, h.upper = NULL, degree = 1,
-  ncv = 1, DEalgorithm = FALSE, warn = FALSE, ...)
+\method{h.cv}{svar.bin}(
+  bin,
+  loss = c("MRSE", "MRAE", "MSE", "MAE"),
+  h.start = NULL,
+  h.lower = NULL,
+  h.upper = NULL,
+  degree = 1,
+  ncv = 1,
+  DEalgorithm = FALSE,
+  warn = FALSE,
+  ...
+)
 
-hcv.data(bin, objective = c("CV", "GCV", "MASE"), h.start = NULL,
-  h.lower = NULL, h.upper = NULL, degree = 1,
-  ncv = ifelse(objective == "CV", 1, 0), cov.dat = NULL,
-  DEalgorithm = FALSE, warn = TRUE, ...)
+hcv.data(
+  bin,
+  objective = c("CV", "GCV", "MASE"),
+  h.start = NULL,
+  h.lower = NULL,
+  h.upper = NULL,
+  degree = 1,
+  ncv = ifelse(objective == "CV", 1, 0),
+  cov.dat = NULL,
+  DEalgorithm = FALSE,
+  warn = TRUE,
+  ...
+)
 }
 \arguments{
 \item{bin}{object used to select a method (binned data, binned density or binned semivariogram).}
@@ -99,10 +134,10 @@ If \code{DEalgorithm == FALSE}, the \code{"L-BFGS-B"} method in \code{\link{opti
 The different options for the argument \code{loss} in \code{h.cv.svar.bin()} define the CV error 
 considered in semivariogram estimation:
 \describe{
- \item{\code{"ASE"}}{Averaged squared error}
- \item{\code{"ARSE"}}{Averaged relative squared error}
- \item{\code{"AAE"}}{Averaged absolute error}
- \item{\code{"ARAE"}}{Averaged relative absolute error}
+ \item{\code{"MSE"}}{Mean squared error}
+ \item{\code{"MRSE"}}{Mean relative squared error}
+ \item{\code{"MAE"}}{Mean absolute error}
+ \item{\code{"MRAE"}}{Mean relative absolute error}
 }
 
 \code{hcv.data} evaluates the objective function at the original data
@@ -113,17 +148,17 @@ estimates are computed by leaving out binning cells with indexes within
 the intervals \eqn{[x_i - ncv + 1, x_i + ncv - 1]}.
 }
 \examples{
+# Trend estimation
 bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag)
 hcv <- h.cv(bin, ncv = 2)
 lp <- locpol(bin, h = hcv$h)
-## Alternatively:
-## lp <- locpolhcv(earthquakes[, c("lon", "lat")], earthquakes$mag, ncv = 2)
+# Alternatively, `locpolhcv()` could be called instead of the previous code. 
 
 simage(lp, main = 'Smoothed magnitude')
 contour(lp, add = TRUE)
 with(earthquakes, points(lon, lat, pch = 20))
 
-## Density estimation
+# Density estimation
 hden <- h.cv(as.bin.den(bin))
 den <- np.den(bin, h = hden$h)
 
@@ -139,5 +174,5 @@ Francisco-Fernandez M. and Opsomer J.D. (2005) Smoothing parameter selection
 }
 \seealso{
 \code{\link{locpol}}, \code{\link{locpolhcv}}, \code{\link{binning}}, 
-\code{\link{np.svar}}.
+\code{\link{np.den}}, \code{\link{np.svar}}.
 }

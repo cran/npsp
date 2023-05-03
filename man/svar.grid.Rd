@@ -7,8 +7,14 @@
 \usage{
 svar.grid(svar, log = TRUE, ...)
 
-\method{svar.grid}{svarmod}(svar, log = TRUE, n = 256, min = 10 *
-  .Machine$double.eps, max = 1.1 * svar$range, ...)
+\method{svar.grid}{svarmod}(
+  svar,
+  log = TRUE,
+  n = 256,
+  min = 10 * .Machine$double.eps,
+  max = 1.1 * svar$range,
+  ...
+)
 }
 \arguments{
 \item{svar}{(fitted) variogram model (a \code{\link{svarmod}} 
@@ -25,7 +31,14 @@ in  (base 2) logarithmic scale.}
 
 \item{max}{maximum lag. Defaults to \code{1.1*svar$range}.}
 }
+\value{
+A \code{svar.grid-\link{class}} object extending \code{svarmod},
+\code{bin.den} and \code{data.grid} classes.
+}
 \description{
 Discretizes a variogram model (to speed up variogram evaluation). 
 Constructor function of the \code{svar.grid-\link{class}}.
+}
+\seealso{
+\code{\link{svarmod}}, \code{\link{bin.den}}, \code{\link{data.grid}}.
 }

@@ -10,8 +10,7 @@ as.sp(obj, ...)
 
 \method{as.sp}{grid.par}(obj, ...)
 
-\method{as.sp}{data.grid}(obj, data.ind = NULL,
-  proj4string = CRS(as.character(NA)), ...)
+\method{as.sp}{data.grid}(obj, data.ind = NULL, proj4string = CRS(as.character(NA)), ...)
 }
 \arguments{
 \item{obj}{a \code{\link{npsp}} object.}
@@ -21,6 +20,11 @@ as.sp(obj, ...)
 \item{data.ind}{integer or character; vector with indexes or names of the data components.}
 
 \item{proj4string}{a \code{\link[sp]{CRS-class}} object.}
+}
+\value{
+\code{as.sp.grid.par} returns a \code{\link[sp]{GridTopology-class}} object.
+
+\code{as.sp.data.grid} returns a \code{\link[sp]{SpatialGridDataFrame-class}} object.
 }
 \description{
 Converts a npsp object to a \link[sp:00sp]{sp} object.

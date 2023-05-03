@@ -8,18 +8,45 @@
 \usage{
 spersp(x, ...)
 
-\method{spersp}{default}(x = seq(0, 1, len = nrow(z)), y = seq(0, 1,
-  len = ncol(z)), z, s = z, slim = range(s, finite = TRUE),
-  col = jet.colors(128), breaks = NULL, legend = TRUE,
-  horizontal = FALSE, legend.shrink = 0.8, legend.width = 1.2,
-  legend.mar = ifelse(horizontal, 3.1, 5.1), legend.lab = NULL,
-  bigplot = NULL, smallplot = NULL, lab.breaks = NULL,
-  axis.args = NULL, legend.args = NULL, graphics.reset = FALSE,
-  xlab = NULL, ylab = NULL, zlab = NULL, theta = 40, phi = 20,
-  ticktype = "detailed", cex.axis = 0.75, ...)
+\method{spersp}{default}(
+  x = seq(0, 1, len = nrow(z)),
+  y = seq(0, 1, len = ncol(z)),
+  z,
+  s = z,
+  slim = range(s, finite = TRUE),
+  col = jet.colors(128),
+  breaks = NULL,
+  legend = TRUE,
+  horizontal = FALSE,
+  legend.shrink = 0.8,
+  legend.width = 1.2,
+  legend.mar = ifelse(horizontal, 3.1, 5.1),
+  legend.lab = NULL,
+  bigplot = NULL,
+  smallplot = NULL,
+  lab.breaks = NULL,
+  axis.args = NULL,
+  legend.args = NULL,
+  reset = TRUE,
+  xlab = NULL,
+  ylab = NULL,
+  zlab = NULL,
+  theta = 40,
+  phi = 20,
+  ticktype = "detailed",
+  cex.axis = 0.75,
+  ...
+)
 
-\method{spersp}{data.grid}(x, data.ind = 1, s = x[[data.ind]],
-  xlab = NULL, ylab = NULL, zlab = NULL, ...)
+\method{spersp}{data.grid}(
+  x,
+  data.ind = 1,
+  s = x[[data.ind]],
+  xlab = NULL,
+  ylab = NULL,
+  zlab = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{grid values for \code{x} coordinate. If \code{x} is a list, 
@@ -86,10 +113,10 @@ label. This is in the form of list and is just passed to the \code{\link{mtext}}
 function. Usually this will not be needed (see \code{\link[fields]{image.plot}} 
 for details).}
 
-\item{graphics.reset}{logical; if \code{FALSE} (default) the plotting region
+\item{reset}{logical; if \code{FALSE} the plotting region
 (\code{\link{par}("plt")}) will not be reset to make it possible to add more features
-to the plot (e.g. using functions such as points or lines). If \code{TRUE} will
-reset plot parameters to the values before entering the function.}
+to the plot (e.g. using functions such as points or lines). If \code{TRUE} (default) 
+the plot parameters will be reset to the values before entering the function.}
 
 \item{xlab}{label for the x axis, defaults to a description of \code{x}.}
 
@@ -130,20 +157,16 @@ and (optionally) adds a legend strip with the color scale
 \section{Side Effects}{
  After exiting, the plotting region may be changed 
 (\code{\link{par}("plt")}) to make it possible to add more features to the plot
-(set \code{graphics.reset = FALSE} to avoid this).
+(set \code{reset = FALSE} to avoid this).
 }
 
 \examples{
-
-#
 # Regularly spaced 2D data
 nx <- c(40, 40) # ndata =  prod(nx)
 x1 <- seq(-1, 1, length.out = nx[1])
 x2 <- seq(-1, 1, length.out = nx[2])
 trend <- outer(x1, x2, function(x,y) x^2 - y^2) 
 spersp( x1, x2, trend, main = 'Trend', zlab = 'y')
-
-#
 # Multiple plots 
 set.seed(1)
 y <- trend + rnorm(prod(nx), 0, 0.1)
@@ -152,8 +175,8 @@ x <- as.matrix(expand.grid(x1 = x1, x2 = x2)) # two-dimensional grid
 lp <- locpol(x, y, nbin = nx, h =  diag(c(0.3, 0.3)))
 # 1x2 plot
 old.par <- par(mfrow = c(1,2))
-spersp( x1, x2, y, main = 'Data')
-spersp(lp, main = 'Estimated trend', zlab = 'y')
+spersp( x1, x2, y, main = 'Data', reset = FALSE)
+spersp(lp, main = 'Estimated trend', zlab = 'y', reset = FALSE)
 par(old.par)
 }
 \seealso{

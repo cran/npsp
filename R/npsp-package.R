@@ -1,14 +1,19 @@
-#--------------------------------------------------------------------
+#····································································
 #   npsp-package.R
-#--------------------------------------------------------------------
+#····································································
 #   npsp-package
 #   earthquakes
 #   aquifer
 #
-#   (c) R. Fernandez-Casal         Last revision: Aug 2017
-#--------------------------------------------------------------------
+#   (c) R. Fernandez-Casal
+#
+#   NOTE: Press Ctrl + Shift + O to show document outline in RStudio
+#····································································
 
 
+#····································································
+# npsp-package ----
+#····································································
 #' npsp: Nonparametric spatial (geo)statistics
 #'
 #' This package implements nonparametric methods 
@@ -72,45 +77,48 @@
 #' There are also some functions which can be used to interact with other packages.
 #' For instance, \code{\link{as.variogram}} (\pkg{geoR}) or \code{\link{as.vgm}} (\pkg{gstat}).
 #'
-#' @author Ruben Fernandez-Casal (Dep. Mathematics, University of A Coru\~{n}a, Spain).
+#' @author Ruben Fernandez-Casal (Dep. Mathematics, University of A Coruña, Spain).
 #' Please send comments, error reports or suggestions to \email{rubenfcasal@@gmail.com}.
 #' 
 #' @section Acknowledgments:
 #' Important suggestions and contributions to some techniques included here were
 #' made by Sergio Castillo-Paez (Universidad de las Fuerzas Armadas ESPE, Ecuador) 
-#' and Tomas Cotos-Ya\~{n}ez (Dep. Statistics, University of Vigo, Spain).
+#' and Tomas Cotos-Yañez (Dep. Statistics, University of Vigo, Spain).
 #' @name npsp-package
 #' @aliases npsp
 #' @docType package
 # @useDynLib npsp
 #' @useDynLib npsp, .registration = TRUE
 #' @importFrom quadprog solve.QP
-#' @importFrom spam as.spam
-#' @importFrom spam chol.spam
-#' @importFrom spam solve.spam
+#' @importFrom spam as.spam chol.spam solve.spam colSums.spam
+#' @importMethodsFrom spam * %*%
 #' @import graphics
 #' @import sp
 #' @importFrom grDevices colorRamp colorRamp rainbow rgb
-#' @importFrom methods is hasArg
+#' @importFrom methods as is hasArg
 #' @importFrom stats approx complete.cases cov2cor dist optim predict residuals lowess density
 #' @importFrom utils flush.console
 #' @keywords nonparametric smooth
 #' @references
+#' Castillo-Páez S., Fernández-Casal R. and García-Soidán P. (2019)
+#' A nonparametric bootstrap method for spatial data, \bold{137}, 
+#' \emph{Comput. Stat. Data Anal.}, 1-15, \doi{10.1016/j.csda.2019.01.017}. 
+#' 
 #' Fernandez-Casal R., Castillo-Paez S. and Francisco-Fernandez M. (2018)
 #' Nonparametric geostatistical risk mapping, \emph{Stoch. Environ. Res. Ris. Assess.}, 
-#' \url{https://doi.org/10.1007/s00477-017-1407-y}.
+#' \bold{32}, 675-684, \doi{10.1007/s00477-017-1407-y}.
 #' 
 #' Fernandez-Casal R., Castillo-Paez S. and Garcia-Soidan P. (2017)
 #' Nonparametric estimation of the small-scale variability of heteroscedastic spatial processes, 
-#' \emph{Spa. Sta.}, \bold{22}, 358-370, \url{https://doi.org/10.1016/j.spasta.2017.04.001}.
+#' \emph{Spa. Sta.}, \bold{22}, 358-370, \doi{10.1016/j.spasta.2017.04.001}.
 #' 
 #' Fernandez-Casal R. and Francisco-Fernandez M. (2014) 
 #' Nonparametric bias-corrected variogram estimation under non-constant trend, 
-#' \emph{Stoch. Environ. Res. Ris. Assess.}, \bold{28}, 1247-1259.
+#' \emph{Stoch. Environ. Res. Ris. Assess.}, \bold{28}, 1247-1259, \doi{10.1007/s00477-013-0817-8}.
 #'
 #' Fernandez-Casal R., Gonzalez-Manteiga W. and  Febrero-Bande M. (2003) 
 #' Flexible Spatio-Temporal Stationary Variogram Models, 
-#' \emph{Statistics and Computing}, \bold{13}, 127-136.
+#' \emph{Statistics and Computing}, \bold{13}, 127-136, \doi{10.1023/A:1023204525046}.
 #'
 #' Rupert D. and Wand M.P. (1994) Multivariate locally weighted least squares regression.
 #'   \emph{The Annals of Statistics}, \bold{22}, 1346-1370.
@@ -127,6 +135,9 @@ NULL
 
 
 
+#····································································
+# earthquakes ----
+#····································································
 #' Earthquake data
 #'
 #' The data set consists of 1859 earthquakes (with magnitude above or equal to
@@ -160,6 +171,9 @@ NULL
 
 
 
+#····································································
+# aquifer ----
+#····································································
 #' Wolfcamp aquifer data
 #'
 #' @description 
@@ -193,12 +207,15 @@ NULL
 #' Cressie, N. (1993) \emph{Statistics for Spatial Data}. New York. Wiley.
 #' @keywords datasets
 #' @examples
-#' str(aquifer)
+# str(aquifer)
 #' summary(aquifer)
 #' with(aquifer, spoints(lon, lat, head, main = "Wolfcamp aquifer"))
 NULL
 
 
+#····································································
+# precipitation ----
+#····································································
 #' Precipitation data
 #'
 #' The data set consists of total precipitations during March 2016
@@ -224,14 +241,14 @@ NULL
 #' @references
 #' Fernandez-Casal R., Castillo-Paez S. and Francisco-Fernandez M. (2017)
 #' Nonparametric geostatistical risk mapping, \emph{Stoch. Environ. Res. Ris. Assess.}, 
-#' \url{https://doi.org/10.1007/s00477-017-1407-y}.
+#' \doi{10.1007/s00477-017-1407-y}.
 #' 
 #' Fernandez-Casal R., Castillo-Paez S. and Garcia-Soidan P. (2017)
 #' Nonparametric estimation of the small-scale variability of heteroscedastic spatial processes, 
-#' \emph{Spa. Sta.}, \url{https://doi.org/10.1016/j.spasta.2017.04.001}.
+#' \emph{Spa. Sta.}, \doi{10.1016/j.spasta.2017.04.001}.
 #' @keywords datasets
 #' @examples
-#' str(precipitation)
+# str(precipitation)
 #' summary(precipitation)
 #' scattersplot(precipitation)
 NULL

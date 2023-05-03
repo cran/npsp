@@ -1,6 +1,6 @@
-#--------------------------------------------------------------------
+#····································································
 #   np.svar.R (npsp package)
-#--------------------------------------------------------------------
+#····································································
 #   np.svar         S3 class and methods
 #   np.svar()       S3 generic
 #       np.svar.default(x, y, h, maxlag, nlags, minlag, degree,
@@ -13,15 +13,17 @@
 #   np.svariso.corr(lp, x, h, maxlag, nlags, minlag, degree, drv, hat.bin,
 #                   tol, max.iter, plot, ylim)   
 #
-#   (c) R. Fernandez-Casal         Last revision: Aug 2013
-#--------------------------------------------------------------------
+#   (c) R. Fernandez-Casal
+#
+#   NOTE: Press Ctrl + Shift + O to show document outline in RStudio
+#····································································
 # PENDENTE:
 #   - svarisohcv o final da documentacion
 #   - engadir aniso, 2iso, niso
-#--------------------------------------------------------------------
+#····································································
 
 
-#--------------------------------------------------------------------
+#····································································
 #' Local polynomial estimation of the semivariogram
 #'
 #' Estimates a multidimensional semivariogram (and its first derivatives) 
@@ -67,14 +69,15 @@
 #' Local linear regression estimation of the variogram, 
 #' \emph{Stat. Prob. Lett.}, \bold{64}, 169-179.
 #' @export
-np.svar <- function(x, ...) UseMethod("np.svar")
-# S3 generic function
+np.svar <- function(x, ...) {
+#····································································
+  UseMethod("np.svar")
+} # S3 generic function
 # Non parametric pilot estimation of an isotropic semivariogram
 # Returns an S3 object of class "np.svar" (extends "svar.bin")
-#--------------------------------------------------------------------
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname np.svar
 #' @aliases iso.np.svar
 #' @method np.svar default
@@ -93,7 +96,7 @@ np.svar.default <- function(x, y, h = NULL, maxlag = NULL, nlags = NULL,
 #   binning cells without data are set to missing. 
 #   Devuelve estimador np del semivariograma y rejilla binning
 #   Interfaz para la rutina de fortran "svar_iso_np"
-#--------------------------------------------------------------------
+#····································································
     y <- as.numeric(y)
     ny <- length(y)                       # number of data
     x <- as.matrix(x)
@@ -162,22 +165,29 @@ np.svar.default <- function(x, y, h = NULL, maxlag = NULL, nlags = NULL,
     if (drv) result$deriv <- ret$deriv
     oldClass(result) <- c("np.svar", "svar.bin", "bin.data", "bin.den", "data.grid")
     return(result)
-#--------------------------------------------------------------------
+#····································································
 } # svarisonp, iso.np.svar, np.svar.default
 
 
+#····································································
+# np.svar.svar.bin(x, h, degree, drv,  hat.bin, ncv, ...)  ----
+#····································································
 #' @rdname np.svar
 #' @method np.svar svar.bin
 #' @export
 np.svar.svar.bin <- locpol.svar.bin
 
 
+#····································································
+#   np.svariso(x, y, h, maxlag, nlags, minlag, degree, ----
+#                   drv, hat.bin, ncv, ...) 
+#····································································
 #' @rdname np.svar
 #' @export
 np.svariso <- np.svar.default
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname np.svar  
 #' @inheritParams h.cv.svar.bin 
 #' @details  \code{np.svariso.hcv} calls \code{\link{h.cv}} to obtain an "optimal" 
@@ -187,8 +197,8 @@ np.svariso <- np.svar.default
 #' @export
 np.svariso.hcv <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nlags, 
                   degree = 1, drv = FALSE, hat.bin = TRUE, 
-                  loss = c("ARSE", "ARAE", "ASE", "AAE"), ncv = 1, warn = FALSE, ...) { 
-#--------------------------------------------------------------------
+                  loss = c("MRSE", "MRAE", "MSE", "MAE"), ncv = 1, warn = FALSE, ...) { 
+#····································································
     loss <- match.arg(loss)
     if (is.null(maxlag)) 
       maxlag <- 0.55*sqrt(sum(diff(apply(x, 2, range))^2)) # 55% of largest lag
@@ -200,14 +210,17 @@ np.svariso.hcv <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nl
     return(locpol(bin, h = hopt, degree = degree, drv = drv, hat.bin = hat.bin))
 }           
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname np.svar
 #' @param  lp local polynomial estimate of the trend function (object of class 
 #'  \code{\link{locpol.bin}}).
 #' @param tol convergence tolerance. The algorithm stops if the average of the 
 #' relative squared diferences is less than \code{tol}. Defaults to 0.04. 
 #' @param max.iter maximum number of iterations. Defaults to 10.
-#' @param plot logical; if \code{TRUE}, the estimates obtained at each iteration are plotted.
+#' @param plot logical; if \code{TRUE}, the estimates obtained at each iteration 
+#' are plotted.
+#' @param verbose logical; if \code{TRUE}, the errors (averages of the 
+#' relative squared diferences) at each iteration are printed.
 #' @param ylim y-limits of the plot (if \code{plot == TRUE}).
 ## @param col colors for lines and points if \code{plot == TRUE}. 
 #' @details  
@@ -224,9 +237,9 @@ np.svariso.hcv <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nl
 #' @export
 np.svariso.corr <- function(lp, x = lp$data$x, h = NULL, maxlag = NULL, nlags = NULL,
                       minlag = maxlag/nlags, degree = 1, drv = FALSE, hat.bin = TRUE, 
-                      tol = 0.05, max.iter = 10, plot = FALSE, 
+                      tol = 0.05, max.iter = 10, plot = FALSE, verbose = plot,
                       ylim = c(0,2*max(svar$biny, na.rm = TRUE))) {
-#--------------------------------------------------------------------
+#····································································
     if (!inherits(lp, "locpol.bin"))
       stop("function only works for objects of class (or extending) 'locpol.bin'")
     if (is.null(lp$locpol$hat))
@@ -285,9 +298,8 @@ np.svariso.corr <- function(lp, x = lp$data$x, h = NULL, maxlag = NULL, nlags = 
         if(plot) {
             lines(sv.lags, svar$est, col =  col[iter])
             points(sv.lags, svar$biny, col =  col[iter]) 
-            cat('Iteration ', iter, ': ', error, '\n')
         }    
-    
+        if (verbose) cat('Iteration ', iter, ': ', error, '\n')
         if (error < tol) break
         svarold <- svar$est
     } # for (iter in 2:sv.niter) 
@@ -302,6 +314,6 @@ np.svariso.corr <- function(lp, x = lp$data$x, h = NULL, maxlag = NULL, nlags = 
     svar$svar$iter <- iter
     svar$svar$error <- error
     return(svar)
-#--------------------------------------------------------------------
+#····································································
 } # np.svariso.corr
  

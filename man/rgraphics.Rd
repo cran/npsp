@@ -7,14 +7,11 @@
 \alias{contour.data.grid}
 \title{R Graphics for gridded data}
 \usage{
-\method{image}{data.grid}(x, data.ind = 1, xlab = NULL, ylab = NULL,
-  ...)
+\method{image}{data.grid}(x, data.ind = 1, xlab = NULL, ylab = NULL, ...)
 
-\method{persp}{data.grid}(x, data.ind = 1, xlab = NULL, ylab = NULL,
-  zlab = NULL, ...)
+\method{persp}{data.grid}(x, data.ind = 1, xlab = NULL, ylab = NULL, zlab = NULL, ...)
 
-\method{contour}{data.grid}(x, data.ind = 1, filled = FALSE,
-  xlab = NULL, ylab = NULL, ...)
+\method{contour}{data.grid}(x, data.ind = 1, filled = FALSE, xlab = NULL, ylab = NULL, ...)
 }
 \arguments{
 \item{x}{a "\code{\link{data.grid}}"-class object.}
@@ -33,6 +30,13 @@ containing the values to be used for coloring the rectangles.}
 \item{filled}{logical; if \code{FALSE} (default), function \code{\link{contour}}
 is called, otherwise \code{\link{filled.contour}}.}
 }
+\value{
+\code{image()} and \code{contour()} do not return any value, call for secondary 
+effects (generate the corresponding plot).
+\code{persp()} invisibly returns the viewing transformation matrix (see 
+\code{\link{persp}} for details), a 4 x 4 matrix that can be used to superimpose 
+additional graphical elements using the function \code{\link{trans3d}}.
+}
 \description{
 Draw an image, perspective, contour or filled contour plot for data
 on a bidimensional regular grid (S3 methods for class "\code{\link{data.grid}}").
@@ -40,19 +44,15 @@ on a bidimensional regular grid (S3 methods for class "\code{\link{data.grid}}")
 \examples{
 # Regularly spaced 2D data
 grid <- grid.par(n = c(50, 50), min = c(-1, -1), max = c(1, 1))
-
 f2d <- function(x) x[1]^2 - x[2]^2
 trend <- apply(coords(grid), 1, f2d)
 set.seed(1)
 y <- trend + rnorm(prod(dim(grid)), 0, 0.1)
 gdata <- data.grid(trend = trend, y = y, grid = grid)
-
 # perspective plot
 persp(gdata, main = 'Trend', theta = 40, phi = 20, ticktype = "detailed")
-
 # filled contour plot
 contour(gdata, main = 'Trend', filled = TRUE, color.palette = jet.colors)
-
 # Multiple plots with a common legend:
 scale.range <- c(-1.2, 1.2)
 scale.color <- jet.colors(64)

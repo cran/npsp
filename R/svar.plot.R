@@ -1,21 +1,26 @@
-#--------------------------------------------------------------------
+#····································································
 #   svar.plot.R (npsp package)
 #   S3 and S4 plot methods for npsp-objects
-#--------------------------------------------------------------------
+#····································································
 #   svar.plot S3 plot methods
 #     plot.fitsvar(x, y, legend, xlab, ylab, ylim, lwd, add, ...)
 #     plot.svar.bin(x, y, xlab, ylab, ylim, add, ...)
 #     plot.np.svar(x, y, xlab, ylab, ylim, add, ...)
 #
 #   (c) Ruben Fernandez-Casal
-#   Created: Aug 2014                          Last changed: May 2017
-#--------------------------------------------------------------------
+#   Created: Aug 2014
+#
+#   NOTE: Press Ctrl + Shift + O to show document outline in RStudio
+#····································································
 # PENDENTE:
 #   - @examples
 #   - curve(sv(svm, x), add = TRUE)
-#--------------------------------------------------------------------
+#····································································
 
 
+#····································································
+# svar.plot ----
+#····································································
 #' @name svar.plot
 #' @title Plot a semivariogram object
 #' @description Utilities for plotting pilot semivariograms or fitted models.
@@ -24,7 +29,7 @@
 NULL
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname svar.plot
 #' @method plot fitsvar
 #' @description \code{plot.fitsvar} plots a fitted variogram model.
@@ -34,28 +39,32 @@ NULL
 #' @param legend logical; if \code{TRUE} (default), a legend is added to the plot.
 #' @param xlab label for the x axis (defaults to "distance").
 #' @param ylab label for the y axis (defaults to "semivariance").
+#' @param xlim x-limits.
 #' @param ylim y-limits.
 #' @param lwd line widths for points (estimates) and lines (fitted model) respectively.
 #' @param ...  additional graphical parameters (see \code{\link{par}}).
+#' @return No return value, called for side effects (generate the plot).
 #' @export
 plot.fitsvar <- function(x, y = NULL, legend = TRUE, xlab = "distance", ylab = "semivariance",
-                          ylim = c(0, 1.25*max(x$fit$sv, na.rm = TRUE)), lwd = c(1, 2), add = FALSE, ...) {
+                          xlim = NULL, ylim = c(0, 1.25*max(x$fit$sv, na.rm = TRUE)), lwd = c(1, 2), add = FALSE, ...) {
     if (!inherits(x, "isotropic"))
       stop("function only works for isotropic variograms.")
     if (add)   
         with(x$fit, lines(u, fitted.sv, lwd = lwd, ... ))
     else {
-        with(x$fit, plot(u, sv, xlab = xlab, ylab = ylab, ylim = ylim, lwd = lwd[1], ...))
+        if(is.null(xlim)) xlim <- c(0, x$esv$grid$max)
+        with(x$fit, plot(u, sv, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, 
+                         lwd = lwd[1], ...))
         with(x$fit, lines(u, fitted.sv, lwd = lwd[2]))
         if (legend) legend("bottomright", legend = c("estimates", "fitted model"),
             lty = c(NA, 1), pch = c(1, NA), lwd = lwd)
     } 
     invisible(NULL)       
-#--------------------------------------------------------------------
+#····································································
 } # plot.fitsvar
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname svar.plot
 #' @method plot svar.bin
 #' @description \code{plot.svar.bin} plots the binned semivariances.
@@ -63,32 +72,34 @@ plot.fitsvar <- function(x, y = NULL, legend = TRUE, xlab = "distance", ylab = "
 #' to the existing plot.
 #' @export
 plot.svar.bin <- function(x, y = NULL, xlab = "distance", ylab = "semivariance",
-                          ylim = c(0,max(x$biny, na.rm = TRUE)), add = FALSE, ...) {
+                          xlim = NULL, ylim = c(0,max(x$biny, na.rm = TRUE)), add = FALSE, ...) {
     if (x$grid$nd != 1L)
         stop("function only works for isotropic variograms.")
     if (add)   
         points(coords(x), x$biny, ... )
-    else
-        plot(coords(x), x$biny, xlab = xlab, ylab = ylab, ylim = ylim, ... )
-#--------------------------------------------------------------------
+    else {
+      if(is.null(xlim)) xlim <- c(0, x$grid$max)
+      plot(coords(x), x$biny, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ... )
+    }
+#····································································
 } # plot.svar.bin
         
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname svar.plot
 #' @method plot np.svar
 #' @description \code{plot.np.svar} plots a local polynomial estimate of the semivariogram.
 #' @export
 plot.np.svar <- function(x, y = NULL, xlab = "distance", ylab = "semivariance",
-                          ylim = c(0,max(x$biny, na.rm = TRUE)), add = FALSE, ...) {
+                          xlim = NULL, ylim = c(0,max(x$biny, na.rm = TRUE)), add = FALSE, ...) {
     if (x$grid$nd != 1L)
         stop("function only works for isotropic variograms.")
     if (add)   
         lines(coords(x), x$est, ... )
     else {
-        plot(coords(x), x$biny, xlab = xlab, ylab = ylab, ylim = ylim, ... )
+        plot.svar.bin(x, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, ... )
         lines(coords(x), x$est, lwd = 2 )
     }    
-#--------------------------------------------------------------------
+#····································································
 } # plot.svar.bin

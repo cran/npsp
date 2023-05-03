@@ -4,7 +4,8 @@
 \name{precipitation}
 \alias{precipitation}
 \title{Precipitation data}
-\format{A \code{\link[sp:SpatialGridDataFrame-class]{SpatialPointsDataFrame}} with 1053 observations on the 
+\format{
+A \code{\link[sp:SpatialGridDataFrame-class]{SpatialPointsDataFrame}} with 1053 observations on the 
 following 6 variables:
 \describe{
   \item{y}{total precipitations (square-root of rainfall inches),}
@@ -17,7 +18,8 @@ and the following \code{\link{attributes}}:
   \item{border}{\code{\link[sp]{SpatialPolygons}} with the boundary
   of the continental part of USA,}
   \item{interior}{\code{\link[sp]{SpatialPolygons}} with the U.S. state boundaries.}
-}}
+}
+}
 \source{
 National Climatic Data Center: \cr
 \url{https://www.ncdc.noaa.gov/cdo-web/datasets}.
@@ -27,17 +29,16 @@ The data set consists of total precipitations during March 2016
 recorded over 1053 locations on the continental part of USA.
 }
 \examples{
-str(precipitation)
 summary(precipitation)
 scattersplot(precipitation)
 }
 \references{
 Fernandez-Casal R., Castillo-Paez S. and Francisco-Fernandez M. (2017)
 Nonparametric geostatistical risk mapping, \emph{Stoch. Environ. Res. Ris. Assess.}, 
-\url{https://doi.org/10.1007/s00477-017-1407-y}.
+\doi{10.1007/s00477-017-1407-y}.
 
 Fernandez-Casal R., Castillo-Paez S. and Garcia-Soidan P. (2017)
 Nonparametric estimation of the small-scale variability of heteroscedastic spatial processes, 
-\emph{Spa. Sta.}, \url{https://doi.org/10.1016/j.spasta.2017.04.001}.
+\emph{Spa. Sta.}, \doi{10.1016/j.spasta.2017.04.001}.
 }
 \keyword{datasets}

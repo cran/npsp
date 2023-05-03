@@ -8,13 +8,33 @@
 \usage{
 scattersplot(x, ...)
 
-\method{scattersplot}{default}(x, z, main, xlab, ylab, zlab,
-  col = hot.colors(128), lowess = TRUE, density = TRUE,
-  omd = c(0.05, 0.95, 0.01, 0.95), ...)
+\method{scattersplot}{default}(
+  x,
+  z,
+  main,
+  xlab,
+  ylab,
+  zlab,
+  col = hot.colors(128),
+  lowess = TRUE,
+  density = FALSE,
+  omd = c(0.05, 0.95, 0.01, 0.95),
+  ...
+)
 
-\method{scattersplot}{SpatialPointsDataFrame}(x, data.ind = 1, main,
-  xlab, ylab, zlab, col = hot.colors(128), lowess = TRUE,
-  density = FALSE, omd = c(0.05, 0.95, 0.01, 0.95), ...)
+\method{scattersplot}{SpatialPointsDataFrame}(
+  x,
+  data.ind = 1,
+  main,
+  xlab,
+  ylab,
+  zlab,
+  col = hot.colors(128),
+  lowess = TRUE,
+  density = FALSE,
+  omd = c(0.05, 0.95, 0.01, 0.95),
+  ...
+)
 }
 \arguments{
 \item{x}{object used to select a method.}
@@ -43,6 +63,9 @@ is added to the histogram.}
 in normalized device coordinates (i.e. fractions of the device region).}
 
 \item{data.ind}{integer (or character) with the index (or name) of the data component.}
+}
+\value{
+No return value, called for side effects (generate the plot).
 }
 \description{
 Draws (in a 2 by 2 layout) the following plots: 

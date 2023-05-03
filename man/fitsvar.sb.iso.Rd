@@ -3,12 +3,19 @@
 \name{fitsvar.sb.iso}
 \alias{fitsvar.sb.iso}
 \alias{fitsvar}
+\alias{fitsvar-class}
 \title{Fit an isotropic Shapiro-Botha variogram model}
 \usage{
-fitsvar.sb.iso(esv, dk = 4 * ncol(esv$data$x), nx = NULL,
-  rmax = esv$grid$max, min.contrib = 10, method = c("cressie",
-  "equal", "npairs", "linear"), iter = 10,
-  tol = sqrt(.Machine$double.eps))
+fitsvar.sb.iso(
+  esv,
+  dk = 4 * ncol(esv$data$x),
+  nx = NULL,
+  rmax = esv$grid$max,
+  min.contrib = 10,
+  method = c("cressie", "equal", "npairs", "linear"),
+  iter = 10,
+  tol = sqrt(.Machine$double.eps)
+)
 }
 \arguments{
 \item{esv}{pilot semivariogram estimate, a \code{\link{np.svar}}-\code{\link{class}} 
@@ -73,7 +80,7 @@ The different options for the argument \code{method} define the WLS algorithm us
  (default fitting method in \pkg{gstat} package).} 
 } 
 Function \code{\link[quadprog]{solve.QP}} of \pkg{quadprog} package is used
-to solve a strictly convex quadratic program. To avoid problems, the Choleski decomposition
+to solve a strictly convex quadratic program. To avoid problems, the Cholesky decomposition
 of the matrix corresponding to the original problem is computed using \code{\link{chol}} with \code{pivot = TRUE}.
 If this matrix is only positive semi-definite (non-strictly convex QP),
 the number of discretization nodes will be less than \code{nx}.

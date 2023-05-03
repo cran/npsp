@@ -74,25 +74,29 @@ For instance, \code{\link{as.variogram}} (\pkg{geoR}) or \code{\link{as.vgm}} (\
 
 Important suggestions and contributions to some techniques included here were
 made by Sergio Castillo-Paez (Universidad de las Fuerzas Armadas ESPE, Ecuador) 
-and Tomas Cotos-Ya\~{n}ez (Dep. Statistics, University of Vigo, Spain).
+and Tomas Cotos-Yañez (Dep. Statistics, University of Vigo, Spain).
 }
 
 \references{
+Castillo-Páez S., Fernández-Casal R. and García-Soidán P. (2019)
+A nonparametric bootstrap method for spatial data, \bold{137}, 
+\emph{Comput. Stat. Data Anal.}, 1-15, \doi{10.1016/j.csda.2019.01.017}. 
+
 Fernandez-Casal R., Castillo-Paez S. and Francisco-Fernandez M. (2018)
 Nonparametric geostatistical risk mapping, \emph{Stoch. Environ. Res. Ris. Assess.}, 
-\url{https://doi.org/10.1007/s00477-017-1407-y}.
+\bold{32}, 675-684, \doi{10.1007/s00477-017-1407-y}.
 
 Fernandez-Casal R., Castillo-Paez S. and Garcia-Soidan P. (2017)
 Nonparametric estimation of the small-scale variability of heteroscedastic spatial processes, 
-\emph{Spa. Sta.}, \bold{22}, 358-370, \url{https://doi.org/10.1016/j.spasta.2017.04.001}.
+\emph{Spa. Sta.}, \bold{22}, 358-370, \doi{10.1016/j.spasta.2017.04.001}.
 
 Fernandez-Casal R. and Francisco-Fernandez M. (2014) 
 Nonparametric bias-corrected variogram estimation under non-constant trend, 
-\emph{Stoch. Environ. Res. Ris. Assess.}, \bold{28}, 1247-1259.
+\emph{Stoch. Environ. Res. Ris. Assess.}, \bold{28}, 1247-1259, \doi{10.1007/s00477-013-0817-8}.
 
 Fernandez-Casal R., Gonzalez-Manteiga W. and  Febrero-Bande M. (2003) 
 Flexible Spatio-Temporal Stationary Variogram Models, 
-\emph{Statistics and Computing}, \bold{13}, 127-136.
+\emph{Statistics and Computing}, \bold{13}, 127-136, \doi{10.1023/A:1023204525046}.
 
 Rupert D. and Wand M.P. (1994) Multivariate locally weighted least squares regression.
   \emph{The Annals of Statistics}, \bold{22}, 1346-1370.
@@ -107,7 +111,7 @@ Wand M.P. (1994) Fast Computation of Multivariate Kernel Estimators.
 Wand M.P. and Jones M.C. (1995) \emph{Kernel Smoothing}. Chapman and Hall, London.
 }
 \author{
-Ruben Fernandez-Casal (Dep. Mathematics, University of A Coru\~{n}a, Spain).
+Ruben Fernandez-Casal (Dep. Mathematics, University of A Coruña, Spain).
 Please send comments, error reports or suggestions to \email{rubenfcasal@gmail.com}.
 }
 \keyword{nonparametric}

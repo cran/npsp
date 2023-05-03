@@ -1,27 +1,30 @@
-#--------------------------------------------------------------------
+#····································································
 #   bin.data.R (npsp package)
-#--------------------------------------------------------------------
+#····································································
 #   bin.data  S3 class and methods
 #   binning(x, y, nbin, set.NA)
 #
 #   (c) R. Fernandez-Casal
-#   Created: Aug 2012                          Last changed: Aug 2015
-#--------------------------------------------------------------------
+#   Created: Aug 2012
+#
+#   NOTE: Press Ctrl + Shift + O to show document outline in RStudio
+#····································································
 # PENDENTE:
 #   - as.bin.data.data.grid, as.bin.data.default, ...
 #   - ndim() ?
-#--------------------------------------------------------------------
+#····································································
 
 
-#--------------------------------------------------------------------
-# binning <- function(x, y, nbin = NULL, set.NA = FALSE) {
-#--------------------------------------------------------------------
+#····································································
+# binning(x, y, nbin, set.NA, ... ) ----
+#····································································
 #' Linear binning
 #' 
 #' Discretizes the data into a regular grid (computes a binned approximation) 
 #' using the multivariate linear binning technique described in Wand (1994).
 #'
 #' @aliases bin.data-class bin.data
+#' @inheritParams mask.data.grid
 # @inheritParams locpol.default
 #' @param  x vector or matrix of covariates (e.g. spatial coordinates). 
 #' Columns correspond with covariates (coordinate dimension) and rows with data.
@@ -29,6 +32,7 @@
 #' @param  nbin vector with the number of bins on each dimension.
 #' @param  set.NA logical. If \code{TRUE}, sets the bin averages corresponding
 #' to cells without data to \code{NA}.
+#' @param ... further arguments passed to \code{\link{mask.bin.data}()}.
 #' @details If parameter \code{nbin} is not specified is set to \code{pmax(25, rule.binning(x))}.
 #' 
 #' Setting \code{set.NA = TRUE} (equivalent to \code{biny[binw == 0] <- NA}) 
@@ -62,8 +66,8 @@
 #' simage(bin, main = "Binning averages")
 #' with(earthquakes, points(lon, lat, pch = 20))
 #' @export
-binning <- function(x, y = NULL, nbin = NULL, set.NA = FALSE) {
-#--------------------------------------------------------------------
+binning <- function(x, y = NULL, nbin = NULL, set.NA = FALSE, window = NULL, ... ) {
+#····································································
 # Returns an S3 object of class "bin.data" (bin data + grid parameters)
 # Interface to the fortran routine "binning"
 #
@@ -72,7 +76,7 @@ binning <- function(x, y = NULL, nbin = NULL, set.NA = FALSE) {
 #
 # binning <- function(x, ...) UseMethod("binning")
 # binning.default <- function(x, y, nbin = NULL, ...) {
-#--------------------------------------------------------------------
+#····································································
     if (is.null(y)) return(bin.den(x, nbin = nbin))
     y <- as.numeric(y)
     ny <- length(y)                               # number of data
@@ -108,25 +112,28 @@ binning <- function(x, y = NULL, nbin = NULL, set.NA = FALSE) {
               dimnames = dimnames(x)[[2]])) )
     result$data <- list(x = x, y = y, med = ret$med)
     oldClass(result) <- c("bin.data", "bin.den", "data.grid")
+    if(!is.null(window)||length(list(...))) 
+      result <- mask.bin.data(result, window = window, set.NA = set.NA, ...)
     return(result)
-#--------------------------------------------------------------------
+#····································································
 } # binning.default
 
 
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname binning  
 #' @param object (gridded data) used to select a method.
-#' @param ... further arguments passed to or from other methods.
+# @param ... further arguments passed to or from other methods.
 #' @export
-as.bin.data <- function(object, ...) UseMethod("as.bin.data")
-# S3 generic function as.bin.den
-#--------------------------------------------------------------------
+#····································································
+as.bin.data <- function(object, ...) {
+  UseMethod("as.bin.data")
+} # S3 generic function as.bin.data
 
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname binning
 #' @method as.bin.data data.grid
 #' @param data.ind integer (or character) with the index (or name) of the component 
@@ -136,7 +143,7 @@ as.bin.data <- function(object, ...) UseMethod("as.bin.data")
 #'  \code{as.numeric( is.finite( object[[data.ind]] ))}).
 #' @export
 as.bin.data.data.grid <- function(object, data.ind = 1, weights.ind = NULL, ...) {
-#--------------------------------------------------------------------
+#····································································
     if (!inherits(object, "data.grid"))
         stop("function only works for objects of class (or extending) 'data.grid'")
     y <- object[[data.ind]]
@@ -158,12 +165,12 @@ as.bin.data.data.grid <- function(object, data.ind = 1, weights.ind = NULL, ...)
 }
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname binning
 #' @method as.bin.data bin.data
 #' @export
 as.bin.data.bin.data <- function(object, ...) {
-  #--------------------------------------------------------------------
+  #····································································
   if (inherits(object, "svar.bin")) {
     warning("Conversion not yet implemented; using 'as.bin.data.data.grid()'...")
     return(as.bin.data.data.grid(object, data.ind = 'biny', weights.ind = 'binw'))
@@ -175,12 +182,12 @@ as.bin.data.bin.data <- function(object, ...) {
 }
 
 
-#--------------------------------------------------------------------
+#····································································
 #' @rdname binning
 #' @method as.bin.data SpatialGridDataFrame
 #' @export
 as.bin.data.SpatialGridDataFrame <- function(object, data.ind = 1, weights.ind = NULL, ...) {
-  #--------------------------------------------------------------------
+  #····································································
   # if (!inherits(object, "data.grid"))
   #   stop("function only works for objects of class (or extending) 'data.grid'")
   if (!is.null(weights.ind)) {

@@ -13,23 +13,46 @@
 \usage{
 locpol(x, ...)
 
-\method{locpol}{default}(x, y, h = NULL, nbin = NULL, degree = 1 +
-  as.numeric(drv), drv = FALSE, hat.bin = FALSE, ncv = 0,
-  set.NA = FALSE, ...)
+\method{locpol}{default}(
+  x,
+  y,
+  h = NULL,
+  nbin = NULL,
+  degree = 1 + as.numeric(drv),
+  drv = FALSE,
+  hat.bin = FALSE,
+  ncv = 0,
+  set.NA = FALSE,
+  ...
+)
 
-\method{locpol}{bin.data}(x, h = NULL, degree = 1 + as.numeric(drv),
-  drv = FALSE, hat.bin = FALSE, ncv = 0, ...)
+\method{locpol}{bin.data}(
+  x,
+  h = NULL,
+  degree = 1 + as.numeric(drv),
+  drv = FALSE,
+  hat.bin = FALSE,
+  ncv = 0,
+  ...
+)
 
-\method{locpol}{svar.bin}(x, h = NULL, degree = 1, drv = FALSE,
-  hat.bin = TRUE, ncv = 0, ...)
+\method{locpol}{svar.bin}(x, h = NULL, degree = 1, drv = FALSE, hat.bin = TRUE, ncv = 0, ...)
 
-\method{locpol}{bin.den}(x, h = NULL, degree = 1 + as.numeric(drv),
-  drv = FALSE, ncv = 0, ...)
+\method{locpol}{bin.den}(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, ncv = 0, ...)
 
-locpolhcv(x, y, nbin = NULL, objective = c("CV", "GCV", "MASE"),
-  degree = 1 + as.numeric(drv), drv = FALSE, hat.bin = FALSE,
-  set.NA = FALSE, ncv = ifelse(objective == "CV", 2, 0),
-  cov.dat = NULL, ...)
+locpolhcv(
+  x,
+  y,
+  nbin = NULL,
+  objective = c("CV", "GCV", "MASE"),
+  degree = 1 + as.numeric(drv),
+  drv = FALSE,
+  hat.bin = FALSE,
+  set.NA = FALSE,
+  ncv = ifelse(objective == "CV", 2, 0),
+  cov.dat = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{a (data) object used to select a method.}
@@ -121,9 +144,6 @@ contour(lp, add = TRUE)
 bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(41,41))
 lp2 <- locpol(bin, h = diag(2, 2))
 all.equal(lp, lp2)
-
-## Alternatively:
-## lp <- locpolhcv(earthquakes[, c("lon", "lat")], earthquakes$mag, ncv = 4)
 
 den <- locpol(as.bin.den(bin), h = diag(1, 2))
 plot(den, log = FALSE, main = 'Estimated density')

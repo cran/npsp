@@ -11,17 +11,21 @@
 \usage{
 np.den(x, ...)
 
-\method{np.den}{default}(x, nbin = NULL, h = NULL, degree = 1 +
-  as.numeric(drv), drv = FALSE, ncv = 0, ...)
+\method{np.den}{default}(
+  x,
+  nbin = NULL,
+  h = NULL,
+  degree = 1 + as.numeric(drv),
+  drv = FALSE,
+  ncv = 0,
+  ...
+)
 
-\method{np.den}{bin.den}(x, h = NULL, degree = 1 + as.numeric(drv),
-  drv = FALSE, ncv = 0, ...)
+\method{np.den}{bin.den}(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, ncv = 0, ...)
 
-\method{np.den}{bin.data}(x, h = NULL, degree = 1 + as.numeric(drv),
-  drv = FALSE, ncv = 0, ...)
+\method{np.den}{bin.data}(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, ncv = 0, ...)
 
-\method{np.den}{svar.bin}(x, h = NULL, degree = 1 + as.numeric(drv),
-  drv = FALSE, ncv = 0, ...)
+\method{np.den}{svar.bin}(x, h = NULL, degree = 1 + as.numeric(drv), drv = FALSE, ncv = 0, ...)
 }
 \arguments{
 \item{x}{a (data) object used to select a method.}
@@ -75,17 +79,15 @@ the intervals \eqn{[x_i - ncv + 1, x_i + ncv - 1]}, at each dimension i, where \
 denotes the index of the estimation position.
 }
 \examples{
-bin <- binning(earthquakes[, c("lon", "lat")], earthquakes$mag, nbin = c(30,30))
-hden <- h.cv(as.bin.den(bin)) 
-den <- np.den(bin, h = hden$h)
-## Equivalent to:
-## den <- np.den(earthquakes[, c("lon", "lat")], h = hden$h, nbin = c(30,30))
-
+bin.den <- binning(earthquakes[, c("lon", "lat")], nbin = c(30,30))
+h.den <- h.cv(bin.den) 
+den <- np.den(bin.den, h = h.den$h)
 plot(den, main = 'Estimated log(density)')
 }
 \references{
 Wand, M.P. and Jones, M.C. (1995) \emph{Kernel Smoothing}. Chapman and Hall, London.
 }
 \seealso{
-\code{\link{bin.den}}, \code{\link{binning}}, \code{\link{data.grid}}.
+\code{\link{bin.den}}, \code{\link{binning}}, \code{\link{h.cv}}, 
+\code{\link{data.grid}}.
 }
