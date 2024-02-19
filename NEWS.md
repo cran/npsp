@@ -1,3 +1,22 @@
+# Development version (2024-02-17)
+
+* Added `useRaster = all(dim(x) > dev.size("px"))` argument to `image()` 
+  (and `simage()`) methods for gridded data.
+
+* Small changes in *scr/tql2.f90* (preliminary translation to Fortran 90 of the 
+  former *scr/tql2.f*).
+
+
+# npsp 0.7-12 (2023-06-20)
+
+* Minor changes in `locpol()` S3 methods (for `bin.data`, `bin.den` and `svar.bin` 
+  classes) so that the result extends the class of its main argument 
+  (previously assumed fixed).
+  
+* Small changes in FORTRAN routine `besselzeros()` 
+  (DFLOAT replaced by the standard DBLE; CRAN requirement). 
+
+
 # npsp 0.7-11 (2023-05-01)
 
 * Added `intermediate` argument to `np.svariso.corr()` which allows

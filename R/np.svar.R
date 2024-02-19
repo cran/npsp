@@ -220,7 +220,7 @@ np.svariso.hcv <- function(x, y, maxlag = NULL, nlags = NULL, minlag = maxlag/nl
 #' @param plot logical; if \code{TRUE}, the estimates obtained at each iteration 
 #' are plotted.
 #' @param verbose logical; if \code{TRUE}, the errors (averages of the 
-#' relative squared diferences) at each iteration are printed.
+#' relative squared differences) at each iteration are printed.
 #' @param ylim y-limits of the plot (if \code{plot == TRUE}).
 ## @param col colors for lines and points if \code{plot == TRUE}. 
 #' @details  
